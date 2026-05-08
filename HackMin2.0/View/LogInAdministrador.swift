@@ -105,7 +105,6 @@ struct LogInAdministrador: View {
         .ignoresSafeArea()
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
-        
     }
 }
 

@@ -52,6 +52,10 @@ struct ViewPrincipalAdmin: View {
         .ignoresSafeArea()
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
+        // ✅ Esto escucha el cambio y lanza Tabview encima de todo
+        .fullScreenCover(isPresented: $vm.mostrarTabView) {
+            Tabview()
+        }
     }
 }
 
