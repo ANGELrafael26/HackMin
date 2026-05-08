@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+
 @main
 struct HackMin2_0App: App {
     var body: some Scene {
