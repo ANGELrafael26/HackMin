@@ -8,53 +8,39 @@
 import SwiftUI
 
 struct LogInJuez: View {
-    @State private var codigo: String = ""
+    @StateObject private var vm = LogInJuezViewModel()
 
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                // Fondo
                 Image("Diseño7")
                     .resizable()
                     .scaledToFill()
                     .ignoresSafeArea()
 
-                // Card glassmorphism
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .fill(.clear)
                     .glassEffect()
-                    .clipShape(
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    )
-                    .frame(
-                        width: geo.size.width * 0.60,
-                        height: geo.size.height * 0.55
-                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .frame(width: geo.size.width * 0.60, height: geo.size.height * 0.55)
 
                 HStack(spacing: 0) {
-                    // Lado izquierdo — ícono juez
                     VStack {
                         Image("juez1")
                             .resizable()
                             .scaledToFit()
-                            .frame(
-                                width: geo.size.width * 0.13,
-                                height: geo.size.width * 0.13
-                            )
+                            .frame(width: geo.size.width * 0.13, height: geo.size.width * 0.13)
                     }
                     .frame(width: geo.size.width * 0.50 * 0.38)
 
-                    // Divider vertical
                     Rectangle()
                         .fill(Color.white.opacity(0.3))
                         .frame(width: 1, height: geo.size.height * 0.35)
 
-                    // Lado derecho — formulario
                     VStack(spacing: geo.size.height * 0.04) {
-                        // Campo código
                         CustomTextField(
                             placeholder: "Código del juez",
-                            text: $codigo,
+                            text: $vm.codigo,
                             type: .normal,
                             backgroundColor: .white.opacity(0.85),
                             foregroundColor: .black,
@@ -64,11 +50,14 @@ struct LogInJuez: View {
                             width: geo.size.width * 0.50 * 0.55
                         )
 
-                        // Botón Ingresar
+                        if vm.mostrarError {
+                            Text(vm.mensajeError)
+                                .font(.system(size: geo.size.width * 0.013))
+                                .foregroundColor(.red)
+                        }
+
                         CustomButton(
-                            action: {
-                                print("Juez ingresando con código: \(codigo)")
-                            },
+                            action: { vm.ingresar() },
                             style: .standard(
                                 fontColor: .white,
                                 backgroundColor: Color.orange,
@@ -87,10 +76,14 @@ struct LogInJuez: View {
             }
             .frame(width: geo.size.width, height: geo.size.height)
         }
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(.hidden, for: .navigationBar)
     }
 }
 
 #Preview {
-    LogInJuez()
-        .previewInterfaceOrientation(.landscapeLeft)
+    NavigationStack {
+        LogInJuez()
+    }
+    .previewInterfaceOrientation(.landscapeLeft)
 }

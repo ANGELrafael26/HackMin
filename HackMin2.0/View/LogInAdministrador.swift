@@ -8,32 +8,23 @@
 import SwiftUI
 
 struct LogInAdministrador: View {
-    @State private var usuario: String = ""
-    @State private var contrasena: String = ""
+    @StateObject private var vm = LogInAdministradorViewModel()
 
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                // Fondo
                 Image("Diseño7")
                     .resizable()
                     .scaledToFill()
                     .ignoresSafeArea()
 
-                // Card glassmorphism centrada
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .fill(.clear)
                     .glassEffect()
-                    .clipShape(
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    )
-                    .frame(
-                        width: geo.size.width * 0.70,
-                        height: geo.size.height * 0.6
-                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .frame(width: geo.size.width * 0.70, height: geo.size.height * 0.6)
 
                 HStack(spacing: -5) {
-                    // Lado izquierdo — ícono administrador
                     VStack {
                         Image("administrador")
                             .resizable()
@@ -42,12 +33,10 @@ struct LogInAdministrador: View {
                     }
                     .frame(width: geo.size.width * 0.65 * 0.3)
 
-                    // Lado derecho — formulario
                     VStack(spacing: geo.size.height * 0.035) {
-                        // Campo usuario
                         CustomTextField(
                             placeholder: "Ingresa tu usuario",
-                            text: $usuario,
+                            text: $vm.usuario,
                             type: .normal,
                             backgroundColor: .white.opacity(0.85),
                             foregroundColor: .black,
@@ -57,10 +46,9 @@ struct LogInAdministrador: View {
                             width: geo.size.width * 0.65 * 0.52
                         )
 
-                        // Campo contraseña
                         CustomTextField(
                             placeholder: "Ingresa tu contraseña",
-                            text: $contrasena,
+                            text: $vm.contrasena,
                             type: .secure,
                             backgroundColor: .white.opacity(0.85),
                             foregroundColor: .black,
@@ -70,11 +58,14 @@ struct LogInAdministrador: View {
                             width: geo.size.width * 0.65 * 0.52
                         )
 
-                        // Botón Ingresar
+                        if vm.mostrarError {
+                            Text(vm.mensajeError)
+                                .font(.system(size: geo.size.width * 0.013))
+                                .foregroundColor(.red)
+                        }
+
                         CustomButton(
-                            action: {
-                                print("Ingresar tapped")
-                            },
+                            action: { vm.ingresar() },
                             style: .standard(
                                 fontColor: .white,
                                 backgroundColor: Color.orange,
@@ -86,11 +77,8 @@ struct LogInAdministrador: View {
                             )
                         )
 
-                        // Link crear administrador
                         CustomButton(
-                            action: {
-                                print("Crear administrador tapped")
-                            },
+                            action: { vm.crearAdministrador() },
                             style: .textOnly(
                                 text: "Crear administrador",
                                 fontColor: .black,
@@ -106,10 +94,14 @@ struct LogInAdministrador: View {
             }
             .frame(width: geo.size.width, height: geo.size.height)
         }
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(.hidden, for: .navigationBar)
     }
 }
 
 #Preview {
-    LogInAdministrador()
-        .previewInterfaceOrientation(.landscapeLeft)
+    NavigationStack {
+        LogInAdministrador()
+    }
+    .previewInterfaceOrientation(.landscapeLeft)
 }
