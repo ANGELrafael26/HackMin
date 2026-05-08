@@ -13,38 +13,43 @@ struct ViewPrincipalAdmin: View {
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                // Fondo
                 Image("Diseño7")
                     .resizable()
                     .scaledToFill()
                     .ignoresSafeArea()
 
                 VStack(spacing: geo.size.height * 0.03) {
-    
-
-                    // Botón Crear evento
                     MenuBotonAdmin(
                         titulo: "Crear evento",
                         icono: "plus.circle.fill",
                         geo: geo,
                         action: { vm.navegarCrearEvento = true }
                     )
-
-                    // Botón Ver historial
                     MenuBotonAdmin(
                         titulo: "Ver historial",
                         icono: "clock.fill",
                         geo: geo,
                         action: { vm.navegarHistorial = true }
                     )
-                }.padding(.top,300)
+                }
+                .padding(.top, 300)
                 .frame(maxWidth: .infinity)
 
-                // Navegación invisible
-                NavigationLink(destination: Text("Crear Evento"), isActive: $vm.navegarCrearEvento) { EmptyView() }
-                NavigationLink(destination: Text("Ver Historial"), isActive: $vm.navegarHistorial) { EmptyView() }
+                NavigationLink(
+                    destination: CrearEventoView(
+                        concursoActivo: $vm.concursoActivo,
+                        mostrarTabView: $vm.mostrarTabView
+                    ),
+                    isActive: $vm.navegarCrearEvento
+                ) { EmptyView() }
+
+                NavigationLink(
+                    destination: Text("Ver Historial"),
+                    isActive: $vm.navegarHistorial
+                ) { EmptyView() }
             }
         }
+        .ignoresSafeArea()
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
     }
@@ -67,7 +72,6 @@ struct MenuBotonAdmin: View {
 
                 Spacer()
 
-                // Ícono derecho
                 ZStack {
                     RoundedRectangle(cornerRadius: 16)
                         .fill(Color.white)
