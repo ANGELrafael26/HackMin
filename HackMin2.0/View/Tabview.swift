@@ -35,12 +35,10 @@ struct Tabview: View {
                                 removal: .move(edge: .trailing).combined(with: .opacity)
                             ))
                     case 2:
-                        Text("Criterios")
-                            .foregroundColor(.white)
-                            .font(.largeTitle)
+                        RubricaView()
                             .transition(.asymmetric(
-                                insertion: .move(edge: .trailing).combined(with: .opacity),
-                                removal: .move(edge: .leading).combined(with: .opacity)
+                                insertion: .move(edge: .leading).combined(with: .opacity),
+                                removal: .move(edge: .trailing).combined(with: .opacity)
                             ))
                     default:
                         EmptyView()
