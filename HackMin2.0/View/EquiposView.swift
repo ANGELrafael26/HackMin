@@ -10,12 +10,12 @@ import SwiftUI
 struct EquiposView: View {
     @StateObject private var vm = EquiposViewModel()
     @State private var mostrarCrearEquipo = false
-
+    
     let columns = [
         GridItem(.flexible(), spacing: 16),
         GridItem(.flexible(), spacing: 16)
     ]
-
+    
     var body: some View {
         NavigationStack {
             GeometryReader { geo in
@@ -48,7 +48,7 @@ struct EquiposView: View {
                             .padding(.bottom, geo.size.height * 0.05)
                         }
                     }
-
+                    
                     // Botón agregar equipo
                     Button {
                         mostrarCrearEquipo = true
@@ -73,6 +73,9 @@ struct EquiposView: View {
                     
                 }
             }
+            .onAppear {
+                vm.cargarEquipos()
+            }
             .sheet(isPresented: $mostrarCrearEquipo) {
                 CrearEquipoView(
                     isPresented: $mostrarCrearEquipo,
@@ -95,7 +98,7 @@ struct EquiposView: View {
 struct EquipoCardView: View {
     let equipo: EquipoModel
     let geo: GeometryProxy
-
+    
     var body: some View {
         RoundedRectangle(cornerRadius: 20, style: .continuous)
             .fill(
@@ -123,14 +126,14 @@ struct EquipoCardView: View {
                                 .clipShape(Circle())
                         )
                         .overlay(Circle().stroke(Color.white.opacity(0.6), lineWidth: 2))
-
+                    
                     Text(equipo.nombre_equipo)
                         .font(.system(size: geo.size.width * 0.014, weight: .bold, design: .rounded))
                         .foregroundColor(.white)
                         .lineLimit(1)
                         .truncationMode(.tail)
                 }
-                .padding(.horizontal, 12)
+                    .padding(.horizontal, 12)
             )
     }
 }

@@ -29,7 +29,6 @@ class CrearEquipoViewModel: ObservableObject {
             .filter { !$0.isEmpty }
     }
 
-    // Actualizamos la función para que guarde directamente en Firebase y notifique el resultado
     func guardarEquipo(idConcurso: String) -> EquipoModel? {
         guard !nombreEquipo.trimmingCharacters(in: .whitespaces).isEmpty else {
             mensajeError = "El nombre del equipo es obligatorio."

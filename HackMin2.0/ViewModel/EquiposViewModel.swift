@@ -10,52 +10,44 @@ import SwiftUI
 import Combine
 
 class EquiposViewModel: ObservableObject {
-    @Published var equipos: [EquipoModel] = [
-        EquipoModel(
-            id_equipo: "1",
-            id_concurso: "c1",
-            problematica: "Falta de acceso a agua potable",
-            nombre_equipo: "AquaTech",
-            nombre_proyecto: "HydroSense",
-            integrantes: ["Ana", "Luis", "Sofía"],
-            foto_perfil: EquipoModel.fotoPredeterminada
-        ),
-        EquipoModel(
-            id_equipo: "2",
-            id_concurso: "c1",
-            problematica: "Residuos electrónicos sin reciclar",
-            nombre_equipo: "GreenByte",
-            nombre_proyecto: "EcoCircuit",
-            integrantes: ["Carlos", "María"],
-            foto_perfil: EquipoModel.fotoPredeterminada
-        ),
-        EquipoModel(
-            id_equipo: "3",
-            id_concurso: "c1",
-            problematica: "Desnutrición infantil en zonas rurales",
-            nombre_equipo: "NutriBot",
-            nombre_proyecto: "SmartFood",
-            integrantes: ["Diego", "Valeria", "Jorge"],
-            foto_perfil: EquipoModel.fotoPredeterminada
-        ),
-        EquipoModel(
-            id_equipo: "4",
-            id_concurso: "c1",
-            problematica: "Transporte público ineficiente",
-            nombre_equipo: "MoveIQ",
-            nombre_proyecto: "RouteAI",
-            integrantes: ["Fernanda", "Tomás"],
-            foto_perfil: EquipoModel.fotoPredeterminada
-        )
-    ]
-
+    @Published var equipos: [EquipoModel] = []
+    
+    @Published var mostrarError: Bool = false
+    @Published var mensajeError: String = ""
+    
     @Published var mostrarCrearEquipo: Bool = false
+    
+    private let equipoDAO = EquipoDAO()
+    
+    
     var idConcurso: String = ""
-
+    
+    func cargarEquipos() {
+            guard !idConcurso.isEmpty else {
+                mensajeError = "No se ha especificado un concurso."
+                mostrarError = true
+                return
+            }
+            
+            equipoDAO.getEquipos(porConcurso: idConcurso) { [weak self] result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let equiposObtenidos):
+                        self?.equipos = equiposObtenidos
+                    case .failure(let error):
+                        self?.mensajeError = error.localizedDescription
+                        self?.mostrarError = true
+                    }
+                }
+            }
+        }
+    
+    
+    
     func agregarEquipo(_ equipo: EquipoModel) {
         equipos.append(equipo)
     }
-
+    
     func eliminarEquipo(id: String) {
         equipos.removeAll { $0.id_equipo == id }
     }
