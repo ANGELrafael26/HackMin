@@ -129,8 +129,8 @@ struct CrearEventoView: View {
                         // Botón crear
                         CustomButton(
                             action: {
-                                if let concurso = vm.crearEvento() {
-                                    concursoActivo = concurso
+                                vm.guardarEvento()
+                                if !vm.mostrarError {
                                     withAnimation(.easeInOut(duration: 0.35)) {
                                         mostrarTabView = true
                                     }
@@ -168,3 +168,4 @@ struct CrearEventoView: View {
     )
     .previewInterfaceOrientation(.landscapeLeft)
 }
+

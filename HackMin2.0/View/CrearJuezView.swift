@@ -97,10 +97,14 @@ struct CrearJuezView: View {
 
                         CustomButton(
                             action: {
-                                if let juez = vm.crearJuez(idConcurso: idConcurso) {
-                                    onGuardar(juez)
-                                    isPresented = false
-                                }
+                                
+                                vm.guardarJuez(idConcurso: idConcurso)
+                                
+                                
+//                                if let juez = vm.guardarJuez(idConcurso: idConcurso) {
+//                                    onGuardar(juez)
+//                                    isPresented = false
+//                                }
                             },
                             style: .standard(
                                 fontColor: .white,
