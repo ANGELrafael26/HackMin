@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LogInJuez: View {
     @StateObject private var vm = LogInJuezViewModel()
+    @State private var mostrarEquipos = false
 
     var body: some View {
         GeometryReader { geo in
@@ -57,7 +58,15 @@ struct LogInJuez: View {
                         }
 
                         CustomButton(
-                            action: { vm.ingresar() },
+                            action: {
+                                vm.ingresar()
+
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    if !vm.mostrarError {
+                                        mostrarEquipos = true
+                                    }
+                                }
+                            },
                             style: .standard(
                                 fontColor: .white,
                                 backgroundColor: Color.orange,
@@ -75,6 +84,8 @@ struct LogInJuez: View {
                 .frame(width: geo.size.width * 0.50, height: geo.size.height * 0.55)
             }
             .frame(width: geo.size.width, height: geo.size.height)
+        }.fullScreenCover(isPresented: $mostrarEquipos) {
+            EquiposJuezView()
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
