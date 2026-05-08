@@ -103,7 +103,7 @@ struct SeleccionUsuario: View {
                     .background(
                         RoundedRectangle(cornerRadius: 28)
                             .fill(Color.white)
-                            .shadow(color: .black.opacity(0.15), radius: 20, x: 0, y: -5)
+                            .shadow(color: .black.opacity(0.14), radius: 20, x: 0, y: -5)
                     )
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
