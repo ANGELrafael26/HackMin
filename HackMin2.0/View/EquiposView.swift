@@ -9,42 +9,66 @@ import SwiftUI
 
 struct EquiposView: View {
     @StateObject private var vm = EquiposViewModel()
+    @State private var mostrarCrearEquipo = false
 
-    let columnas = [
-        GridItem(.flexible()),
-        GridItem(.flexible())
+    let columns = [
+        GridItem(.flexible(), spacing: 16),
+        GridItem(.flexible(), spacing: 16)
     ]
 
     var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .topTrailing) {
-                Color.clear
 
-                // Grid con scroll
+                // Grid de equipos
                 ScrollView {
-                    LazyVGrid(columns: columnas, spacing: geo.size.height * 0.04) {
-                        ForEach(vm.equipos, id: \.id_equipo) { equipo in
-                            EquipoCard(equipo: equipo, geo: geo)
+                    if vm.equipos.isEmpty {
+                        VStack(spacing: 12) {
+                            Image(systemName: "person.3")
+                                .font(.system(size: geo.size.width * 0.04))
+                                .foregroundColor(.white.opacity(0.4))
+                            Text("Aún no hay equipos registrados")
+                                .font(.system(size: geo.size.width * 0.014, design: .rounded))
+                                .foregroundColor(.white.opacity(0.4))
                         }
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, geo.size.height * 0.3)
+                    } else {
+                        LazyVGrid(columns: columns, spacing: geo.size.height * 0.03) {
+                            ForEach(vm.equipos, id: \.id_equipo) { equipo in
+                                Button {
+                                    // acción al seleccionar equipo
+                                } label: {
+                                    EquipoCardView(equipo: equipo, geo: geo)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                        .padding(.horizontal, geo.size.width * 0.05)
+                        .padding(.top, geo.size.height * 0.12)
+                        .padding(.bottom, geo.size.height * 0.05)
                     }
-                    .padding(.top, geo.size.height * 0.12)
-                    .padding(.horizontal, geo.size.width * 0.04)
-                    .padding(.bottom, geo.size.height * 0.04)
                 }
 
-                // Botón agregar equipo
-                Button(action: { vm.mostrarCrearEquipo = true }) {
+                // Botón agregar equipo — esquina superior derecha
+                Button {
+                    mostrarCrearEquipo = true
+                } label: {
                     HStack(spacing: 8) {
                         Image(systemName: "plus.circle.fill")
-                            .font(.system(size: geo.size.width * 0.022))
+                            .font(.system(size: geo.size.width * 0.018))
                         Text("Agregar equipo")
-                            .font(.system(size: geo.size.width * 0.016, weight: .semibold))
+                            .font(.system(
+                                size: geo.size.width * 0.013,
+                                weight: .semibold,
+                                design: .rounded
+                            ))
                     }
                     .foregroundColor(.white)
                     .padding(.horizontal, geo.size.width * 0.025)
                     .padding(.vertical, geo.size.height * 0.018)
                     .background(
-                        Capsule()
+                        RoundedRectangle(cornerRadius: 20)
                             .fill(Color.orange)
                             .shadow(color: .orange.opacity(0.4), radius: 8, x: 0, y: 4)
                     )
@@ -53,69 +77,83 @@ struct EquiposView: View {
                 .padding(.trailing, geo.size.width * 0.03)
             }
         }
-        .sheet(isPresented: $vm.mostrarCrearEquipo) {
-            CrearEquipoView(isPresented: $vm.mostrarCrearEquipo) { nuevoEquipo in
-                vm.agregarEquipo(nuevoEquipo)
+        .sheet(isPresented: $mostrarCrearEquipo) {
+            CrearEquipoView(
+                isPresented: $mostrarCrearEquipo,
+                idConcurso: vm.idConcurso
+            ) { nuevoEquipo in
+                withAnimation(.spring(response: 0.7, dampingFraction: 0.90)) {
+                    vm.agregarEquipo(nuevoEquipo)
+                }
             }
+            .presentationDetents([.fraction(2)])
+            .presentationCornerRadius(28)
+            .presentationBackground(.clear)
         }
     }
 }
 
-// MARK: - Card de equipo
-struct EquipoCard: View {
+// MARK: - Tarjeta de equipo
+struct EquipoCardView: View {
     let equipo: EquipoModel
     let geo: GeometryProxy
 
     var body: some View {
-        VStack(spacing: geo.size.height * 0.02) {
-            // Foto del equipo
-            ZStack {
-                Circle()
-                    .fill(Color.orange.opacity(0.25))
-                    .frame(
-                        width: geo.size.width * 0.12,
-                        height: geo.size.width * 0.12
-                    )
-
-                Image(equipo.foto_perfil)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(
-                        width: geo.size.width * 0.12,
-                        height: geo.size.width * 0.12
-                    )
-                    .clipShape(Circle())
-            }
-
-            // Nombre del equipo
-            Text(equipo.nombre_equipo)
-                .font(.system(size: geo.size.width * 0.018, weight: .bold, design: .rounded))
-                .foregroundColor(.black)
-                .multilineTextAlignment(.center)
-
-            // Nombre del proyecto
-            Text(equipo.nombre_proyecto)
-                .font(.system(size: geo.size.width * 0.014, weight: .regular, design: .rounded))
-                .foregroundColor(.gray)
-                .multilineTextAlignment(.center)
-        }
-        .frame(
-            width: geo.size.width * 0.35,
-            height: geo.size.height * 0.38
-        )
-        .background(
-            RoundedRectangle(cornerRadius: 24)
-                .fill(.ultraThinMaterial)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 24)
-                        .stroke(Color.white.opacity(0.5), lineWidth: 1)
+        RoundedRectangle(cornerRadius: 20, style: .continuous)
+            .fill(
+                LinearGradient(
+                    colors: [Color.orange, Color.orange.opacity(0.75)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
                 )
-                .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
-        )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 20)
+                    .stroke(Color.white.opacity(0.3), lineWidth: 1)
+            )
+            .shadow(color: .orange.opacity(0.35), radius: 10, x: 0, y: 6)
+            .frame(height: geo.size.height * 0.22)
+            .overlay(
+                VStack(spacing: geo.size.height * 0.018) {
+                    Circle()
+                        .fill(Color.white.opacity(0.25))
+                        .frame(
+                            width: geo.size.width * 0.07,
+                            height: geo.size.width * 0.07
+                        )
+                        .overlay(
+                            Image(equipo.foto_perfil)
+                                .resizable()
+                                .scaledToFill()
+                                .clipShape(Circle())
+                        )
+                        .overlay(
+                            Circle()
+                                .stroke(Color.white.opacity(0.6), lineWidth: 2)
+                        )
+
+                    Text(equipo.nombre_equipo)
+                        .font(.system(
+                            size: geo.size.width * 0.014,
+                            weight: .bold,
+                            design: .rounded
+                        ))
+                        .foregroundColor(.white)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
+                .padding(.horizontal, 12)
+            )
     }
 }
 
 #Preview {
-    EquiposView()
-        .previewInterfaceOrientation(.landscapeLeft)
+    ZStack {
+        Image("Diseño7")
+            .resizable()
+            .scaledToFill()
+            .ignoresSafeArea()
+        EquiposView()
+    }
+    .previewInterfaceOrientation(.landscapeLeft)
 }

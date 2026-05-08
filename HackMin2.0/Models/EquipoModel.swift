@@ -16,7 +16,7 @@ struct EquipoModel: Codable, Hashable {
     var integrantes: [String]
     var foto_perfil: String
 
-    static let fotoPredeterminada = "equipoDefault"
+    static let fotoPredeterminada = "juez1"
 
     init(
         id_equipo: String,
