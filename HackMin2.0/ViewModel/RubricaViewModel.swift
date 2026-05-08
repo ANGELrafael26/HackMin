@@ -2,7 +2,7 @@
 //  RubricaViewModel.swift
 //  HackMin2.0
 //
-//  Created by Dan Figueroa on 08/05/26.
+//  Created by Naolop on 08/05/26.
 //
 
 import Foundation
