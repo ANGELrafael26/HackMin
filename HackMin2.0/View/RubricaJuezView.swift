@@ -2,7 +2,7 @@
 //  RubricaJuezView.swift
 //  HackMin2.0
 //
-//  Created by Dan Figueroa on 08/05/26.
+//  Created by Naomi López on 08/05/26.
 //
 
 import SwiftUI
@@ -181,7 +181,7 @@ struct CriterioRow: View {
     let criterio: CriterioModel
     @Binding var calificacion: String
     let geo: GeometryProxy
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: geo.size.height * 0.012) {
             HStack {
@@ -189,14 +189,14 @@ struct CriterioRow: View {
                     Text(criterio.nombre_criterio)
                         .font(.system(size: geo.size.width * 0.015, weight: .bold, design: .rounded))
                         .foregroundColor(.black)
-
+                    
                     Text(criterio.descripcion_criterio)
                         .font(.system(size: geo.size.width * 0.011))
                         .foregroundColor(.gray)
                 }
-
+                
                 Spacer()
-
+                
                 // Badges peso y máximo
                 VStack(alignment: .trailing, spacing: 4) {
                     Text("Peso: \(Int(criterio.peso_porcentual))%")
@@ -205,7 +205,7 @@ struct CriterioRow: View {
                         .padding(.horizontal, 8)
                         .padding(.vertical, 3)
                         .background(Capsule().fill(Color.orange))
-
+                    
                     Text("Máx: \(Int(criterio.puntaje_maximo))")
                         .font(.system(size: geo.size.width * 0.010, weight: .semibold))
                         .foregroundColor(.orange)
@@ -214,7 +214,7 @@ struct CriterioRow: View {
                         .background(Capsule().fill(Color.orange.opacity(0.15)))
                 }
             }
-
+            
             // TextField calificación
             HStack {
                 TextField("0 – \(Int(criterio.puntaje_maximo))", text: $calificacion)
@@ -231,7 +231,7 @@ struct CriterioRow: View {
                                     .stroke(Color.orange.opacity(0.5), lineWidth: 1.5)
                             )
                     )
-
+                
                 Text("/ \(Int(criterio.puntaje_maximo)) pts")
                     .font(.system(size: geo.size.width * 0.012))
                     .foregroundColor(.gray)
@@ -248,4 +248,32 @@ struct CriterioRow: View {
         )
         .frame(width: geo.size.width * 0.80 * 0.60)
     }
+}
+
+#Preview {
+    // Mock data for preview
+    let mockEquipo = EquipoModel(
+        id_equipo: "12", id_concurso: "1", problematica: "Problemas", nombre_equipo: "Terra Mind", nombre_proyecto: "Terra Mind", integrantes: ["Naomi"])
+    
+    
+    
+    let mockCriterios: [CriterioModel] = [
+        CriterioModel(id_criterio: "c1", id_concurso: "c1", id_rubrica: "r1", nombre_criterio: "Innovación", descripcion_criterio: "Descripción", peso_porcentual: 30, puntaje_maximo: 10)
+        ,CriterioModel(id_criterio: "c1", id_concurso: "c1", id_rubrica: "r1", nombre_criterio: "Creatividad", descripcion_criterio: "Descripción", peso_porcentual: 30, puntaje_maximo: 10)
+        ,CriterioModel(id_criterio: "c1", id_concurso: "c1", id_rubrica: "r1", nombre_criterio: "Innovación", descripcion_criterio: "Descripción", peso_porcentual: 30, puntaje_maximo: 10)
+        ,
+    ]
+    
+    let mockRubrica = RubricaModel(
+        id_rubrica: "r1", id_concurso: "c1",
+        nombre_rubrica: "Rúbrica General",
+        descripcion_rubrica: "Criterios de evaluación para el hackathon.",
+        criterios: mockCriterios
+    )
+    
+    RubricaJuezView(
+        equipo: mockEquipo,
+        rubrica: mockRubrica,
+        onCalificado: {}
+    )
 }

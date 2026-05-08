@@ -35,3 +35,7 @@ class SeleccionUsuarioViewModel: ObservableObject {
         }
     }
 }
+
+#Preview {
+    SeleccionUsuario()
+}
