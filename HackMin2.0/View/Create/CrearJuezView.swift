@@ -87,7 +87,7 @@ struct CrearJuezView: View {
                             cornerRadius: 30,
                             height: geo.size.height * 0.09,
                             width: geo.size.width * 0.65 * 0.52
-                        )
+                        ).disabled(true)
 
                         if vm.mostrarError {
                             Text(vm.mensajeError)
