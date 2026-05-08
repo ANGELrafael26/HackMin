@@ -17,78 +17,76 @@ struct EquiposView: View {
     ]
 
     var body: some View {
-        GeometryReader { geo in
-            ZStack(alignment: .topTrailing) {
-
-                // Grid de equipos
-                ScrollView {
-                    if vm.equipos.isEmpty {
-                        VStack(spacing: 12) {
-                            Image(systemName: "person.3")
-                                .font(.system(size: geo.size.width * 0.04))
-                                .foregroundColor(.white.opacity(0.4))
-                            Text("Aún no hay equipos registrados")
-                                .font(.system(size: geo.size.width * 0.014, design: .rounded))
-                                .foregroundColor(.white.opacity(0.4))
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.top, geo.size.height * 0.3)
-                    } else {
-                        LazyVGrid(columns: columns, spacing: geo.size.height * 0.03) {
-                            ForEach(vm.equipos, id: \.id_equipo) { equipo in
-                                Button {
-                                    // acción al seleccionar equipo
-                                } label: {
-                                    EquipoCardView(equipo: equipo, geo: geo)
-                                }
-                                .buttonStyle(.plain)
+        NavigationStack {
+            GeometryReader { geo in
+                ZStack(alignment: .topTrailing) {
+                    Image("Diseño7").resizable().scaledToFill().ignoresSafeArea()
+                    // Grid de equipos
+                    ScrollView {
+                        if vm.equipos.isEmpty {
+                            VStack(spacing: 12) {
+                                Image(systemName: "person.3")
+                                    .font(.system(size: geo.size.width * 0.04))
+                                    .foregroundColor(.white.opacity(0.4))
+                                Text("Aún no hay equipos registrados")
+                                    .font(.system(size: geo.size.width * 0.014, design: .rounded))
+                                    .foregroundColor(.white.opacity(0.4))
                             }
+                            .frame(maxWidth: .infinity)
+                            .padding(.top, geo.size.height * 0.3)
+                        } else {
+                            LazyVGrid(columns: columns, spacing: geo.size.height * 0.03) {
+                                ForEach(vm.equipos, id: \.id_equipo) { equipo in
+                                    NavigationLink(destination: DetalleEquipoView(equipo: equipo)) {
+                                        EquipoCardView(equipo: equipo, geo: geo)
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
+                            .padding(.horizontal, geo.size.width * 0.05)
+                            .padding(.top, geo.size.height * 0.12)
+                            .padding(.bottom, geo.size.height * 0.05)
                         }
-                        .padding(.horizontal, geo.size.width * 0.05)
-                        .padding(.top, geo.size.height * 0.12)
-                        .padding(.bottom, geo.size.height * 0.05)
                     }
-                }
 
-                // Botón agregar equipo — esquina superior derecha
-                Button {
-                    mostrarCrearEquipo = true
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.system(size: geo.size.width * 0.018))
-                        Text("Agregar equipo")
-                            .font(.system(
-                                size: geo.size.width * 0.013,
-                                weight: .semibold,
-                                design: .rounded
-                            ))
+                    // Botón agregar equipo
+                    Button {
+                        mostrarCrearEquipo = true
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.system(size: geo.size.width * 0.018))
+                            Text("Agregar equipo")
+                                .font(.system(size: geo.size.width * 0.013, weight: .semibold, design: .rounded))
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, geo.size.width * 0.025)
+                        .padding(.vertical, geo.size.height * 0.018)
+                        .background(
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(Color.orange)
+                                .shadow(color: .orange.opacity(0.4), radius: 8, x: 0, y: 4)
+                        )
                     }
-                    .foregroundColor(.white)
-                    .padding(.horizontal, geo.size.width * 0.025)
-                    .padding(.vertical, geo.size.height * 0.018)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(Color.orange)
-                            .shadow(color: .orange.opacity(0.4), radius: 8, x: 0, y: 4)
-                    )
-                }
-                .padding(.top, geo.size.height * 0.03)
-                .padding(.trailing, geo.size.width * 0.03)
-            }
-        }
-        .sheet(isPresented: $mostrarCrearEquipo) {
-            CrearEquipoView(
-                isPresented: $mostrarCrearEquipo,
-                idConcurso: vm.idConcurso
-            ) { nuevoEquipo in
-                withAnimation(.spring(response: 0.7, dampingFraction: 0.90)) {
-                    vm.agregarEquipo(nuevoEquipo)
+                    .padding(.top, geo.size.height * 0.02)
+                    .padding(.trailing, geo.size.width * 0.03)
+                    
                 }
             }
-            .presentationDetents([.fraction(2)])
-            .presentationCornerRadius(28)
-            .presentationBackground(.clear)
+            .sheet(isPresented: $mostrarCrearEquipo) {
+                CrearEquipoView(
+                    isPresented: $mostrarCrearEquipo,
+                    idConcurso: vm.idConcurso
+                ) { nuevoEquipo in
+                    withAnimation(.spring(response: 0.7, dampingFraction: 0.90)) {
+                        vm.agregarEquipo(nuevoEquipo)
+                    }
+                }
+                .presentationDetents([.fraction(0.92)])
+                .presentationCornerRadius(28)
+                .presentationBackground(.clear)
+            }
+            .navigationBarHidden(true)
         }
     }
 }
@@ -117,27 +115,17 @@ struct EquipoCardView: View {
                 VStack(spacing: geo.size.height * 0.018) {
                     Circle()
                         .fill(Color.white.opacity(0.25))
-                        .frame(
-                            width: geo.size.width * 0.07,
-                            height: geo.size.width * 0.07
-                        )
+                        .frame(width: geo.size.width * 0.07, height: geo.size.width * 0.07)
                         .overlay(
                             Image(equipo.foto_perfil)
                                 .resizable()
                                 .scaledToFill()
                                 .clipShape(Circle())
                         )
-                        .overlay(
-                            Circle()
-                                .stroke(Color.white.opacity(0.6), lineWidth: 2)
-                        )
+                        .overlay(Circle().stroke(Color.white.opacity(0.6), lineWidth: 2))
 
                     Text(equipo.nombre_equipo)
-                        .font(.system(
-                            size: geo.size.width * 0.014,
-                            weight: .bold,
-                            design: .rounded
-                        ))
+                        .font(.system(size: geo.size.width * 0.014, weight: .bold, design: .rounded))
                         .foregroundColor(.white)
                         .lineLimit(1)
                         .truncationMode(.tail)
@@ -149,10 +137,7 @@ struct EquipoCardView: View {
 
 #Preview {
     ZStack {
-        Image("Diseño7")
-            .resizable()
-            .scaledToFill()
-            .ignoresSafeArea()
+        Image("Diseño7").resizable().scaledToFill().ignoresSafeArea()
         EquiposView()
     }
     .previewInterfaceOrientation(.landscapeLeft)
