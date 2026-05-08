@@ -37,7 +37,7 @@ struct ViewPrincipalAdmin: View {
                         geo: geo,
                         action: { vm.navegarHistorial = true }
                     )
-                }.padding(.top,400)
+                }.padding(.top,300)
                 .frame(maxWidth: .infinity)
 
                 // Navegación invisible

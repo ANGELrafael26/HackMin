@@ -18,6 +18,16 @@ struct LogInAdministrador: View {
                     .scaledToFill()
                     .ignoresSafeArea()
 
+                NavigationLink(
+                    destination: ViewPrincipalAdmin(),
+                    isActive: $vm.navegarPrincipal
+                ) { EmptyView() }
+
+                NavigationLink(
+                    destination: RegistroAdministrador(),
+                    isActive: $vm.navegarRegistro
+                ) { EmptyView() }
+
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .fill(.clear)
                     .glassEffect()
@@ -45,7 +55,6 @@ struct LogInAdministrador: View {
                             height: geo.size.height * 0.08,
                             width: geo.size.width * 0.65 * 0.52
                         )
-
                         CustomTextField(
                             placeholder: "Ingresa tu contraseña",
                             text: $vm.contrasena,
@@ -76,7 +85,6 @@ struct LogInAdministrador: View {
                                 height: geo.size.height * 0.08
                             )
                         )
-
                         CustomButton(
                             action: { vm.crearAdministrador() },
                             style: .textOnly(
@@ -94,14 +102,14 @@ struct LogInAdministrador: View {
             }
             .frame(width: geo.size.width, height: geo.size.height)
         }
+        .ignoresSafeArea()
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
+        
     }
 }
 
 #Preview {
-    NavigationStack {
-        LogInAdministrador()
-    }
-    .previewInterfaceOrientation(.landscapeLeft)
+    NavigationStack { LogInAdministrador() }
+        .previewInterfaceOrientation(.landscapeLeft)
 }

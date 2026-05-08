@@ -13,6 +13,7 @@ class RegistroAdministradorViewModel: ObservableObject {
     @Published var contrasena: String = ""
     @Published var mostrarError: Bool = false
     @Published var mensajeError: String = ""
+    @Published var navegarPrincipal: Bool = false
 
     func registrar() {
         guard !nombres.isEmpty, !apellidos.isEmpty,
@@ -23,6 +24,6 @@ class RegistroAdministradorViewModel: ObservableObject {
         }
         mostrarError = false
         print("Registrando administrador: \(nombres) \(apellidos) — usuario: \(usuario)")
-        // Aquí va tu lógica de registro
+        navegarPrincipal = true
     }
 }

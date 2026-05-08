@@ -13,25 +13,26 @@ struct RegistroAdministrador: View {
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                // Fondo
                 Image("Registro")
                     .resizable()
                     .scaledToFill()
                     .ignoresSafeArea()
 
-                HStack(spacing: 0) {
-                    // Lado izquierdo — imagen app
-                    Spacer()
-                        .frame(width: geo.size.width * 0.50)
+                NavigationLink(
+                    destination: ViewPrincipalAdmin(),
+                    isActive: $vm.navegarPrincipal
+                ) { EmptyView() }
 
-                    // Lado derecho — formulario sobre fondo blanco
+                HStack(spacing: 0) {
+                    Spacer()
+                        .frame(width: geo.size.width * 0.53)
+
                     ZStack {
                         Rectangle()
                             .fill(Color.white)
                             .ignoresSafeArea(edges: .trailing)
 
                         VStack(spacing: geo.size.height * 0.04) {
-                            // Ícono administrador
                             Image("administrador")
                                 .resizable()
                                 .scaledToFit()
@@ -40,7 +41,6 @@ struct RegistroAdministrador: View {
                                     height: geo.size.width * 0.08
                                 )
 
-                            // Nombre(s)
                             CustomTextField(
                                 placeholder: "Nombre(s)",
                                 text: $vm.nombres,
@@ -58,7 +58,6 @@ struct RegistroAdministrador: View {
                                     .frame(width: geo.size.width * 0.38, height: geo.size.height * 0.08)
                             )
 
-                            // Apellidos
                             CustomTextField(
                                 placeholder: "Apellidos",
                                 text: $vm.apellidos,
@@ -76,7 +75,6 @@ struct RegistroAdministrador: View {
                                     .frame(width: geo.size.width * 0.38, height: geo.size.height * 0.08)
                             )
 
-                            // Usuario
                             CustomTextField(
                                 placeholder: "Usuario",
                                 text: $vm.usuario,
@@ -94,7 +92,6 @@ struct RegistroAdministrador: View {
                                     .frame(width: geo.size.width * 0.38, height: geo.size.height * 0.08)
                             )
 
-                            // Contraseña
                             CustomTextField(
                                 placeholder: "Contraseña",
                                 text: $vm.contrasena,
@@ -118,13 +115,12 @@ struct RegistroAdministrador: View {
                                     .foregroundColor(.red)
                             }
 
-                            // Botón Registrar
                             CustomButton(
                                 action: { vm.registrar() },
                                 style: .standard(
                                     fontColor: .white,
                                     backgroundColor: Color.orange,
-                                    buttonName: "Ingresar",
+                                    buttonName: "Registrar",
                                     fontName: "Helvetica Neue",
                                     fontSize: geo.size.width * 0.018,
                                     width: geo.size.width * 0.25,
@@ -140,14 +136,13 @@ struct RegistroAdministrador: View {
             }
             .frame(width: geo.size.width, height: geo.size.height)
         }
+        .ignoresSafeArea()
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
     }
 }
 
 #Preview {
-    NavigationStack {
-        RegistroAdministrador()
-    }
-    .previewInterfaceOrientation(.landscapeLeft)
+    NavigationStack { RegistroAdministrador() }
+        .previewInterfaceOrientation(.landscapeLeft)
 }

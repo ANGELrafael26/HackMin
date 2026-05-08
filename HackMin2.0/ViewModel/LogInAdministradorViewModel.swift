@@ -11,6 +11,8 @@ class LogInAdministradorViewModel: ObservableObject {
     @Published var contrasena: String = ""
     @Published var mostrarError: Bool = false
     @Published var mensajeError: String = ""
+    @Published var navegarPrincipal: Bool = false
+    @Published var navegarRegistro: Bool = false
 
     func ingresar() {
         guard !usuario.isEmpty, !contrasena.isEmpty else {
@@ -18,12 +20,11 @@ class LogInAdministradorViewModel: ObservableObject {
             mostrarError = true
             return
         }
-        print("Administrador ingresando — usuario: \(usuario)")
-        // Aquí va tu lógica de autenticación
+        mostrarError = false
+        navegarPrincipal = true
     }
 
     func crearAdministrador() {
-        print("Navegar a crear administrador")
-        // Aquí va tu lógica de navegación a creación
+        navegarRegistro = true
     }
 }
