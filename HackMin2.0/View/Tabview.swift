@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct Tabview: View {
+    let concurso: ConcursoModel
     @StateObject private var vm = TabViewModel()
     @Namespace private var tabAnimation
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         GeometryReader { geo in
@@ -19,7 +21,7 @@ struct Tabview: View {
                     .scaledToFill()
                     .ignoresSafeArea()
 
-                // Contenido con animación
+                // Contenido pestañas
                 ZStack {
                     switch vm.tabSeleccionado {
                     case 0:
@@ -48,7 +50,54 @@ struct Tabview: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding(.bottom, geo.size.height * 0.13)
 
-                // Tab bar personalizada
+                // Header superior
+                VStack {
+                    ZStack {
+                        // Nombre del evento centrado
+                        Text(concurso.nombre_evento)
+                            .font(.system(
+                                size: geo.size.width * 0.030,
+                                weight: .bold,
+                                design: .rounded
+                            ))
+                            .foregroundColor(.black)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                            .frame(maxWidth: geo.size.width * 0.55)
+
+                        HStack {
+                            Button {
+                                vm.mostrarAlertaCerrar = true
+                            } label: {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .font(.system(size: geo.size.width * 0.018, weight: .semibold))
+                                    Text("Cerrar evento")
+                                        .font(.system(
+                                            size: geo.size.width * 0.014,
+                                            weight: .semibold,
+                                            design: .rounded
+                                        ))
+                                }
+                                .foregroundColor(.white)
+                                .padding(.horizontal, geo.size.width * 0.02)
+                                .padding(.vertical, geo.size.height * 0.015)
+                                .background(
+                                    Capsule()
+                                        .fill(Color.red.opacity(0.85))
+                                        .shadow(color: .red.opacity(0.4), radius: 6, x: 0, y: 3)
+                                )
+                            }
+                            Spacer()
+                        }
+                        .padding(.leading, geo.size.width * 0.03)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, geo.size.height * 0.055)
+
+                    Spacer()
+                }
+
                 CustomTabBar(
                     tabSeleccionado: $vm.tabSeleccionado,
                     geo: geo,
@@ -57,6 +106,14 @@ struct Tabview: View {
             }
         }
         .ignoresSafeArea()
+        .alert("¿Cerrar evento?", isPresented: $vm.mostrarAlertaCerrar) {
+            Button("Cancelar", role: .cancel) {}
+            Button("Cerrar", role: .destructive) {
+                dismiss()
+            }
+        } message: {
+            Text("Se cerrará el evento \"\(concurso.nombre_evento)\". ¿Deseas continuar?")
+        }
     }
 }
 
@@ -149,12 +206,11 @@ struct CustomTabBar: View {
         .padding(.vertical, geo.size.height * 0.012)
         .background(
             ZStack {
-                // Capa blur base
                 RoundedRectangle(cornerRadius: 28)
                     .fill(.clear)
                     .glassEffect()
 
-                // Gradiente sutil encima
+
                 RoundedRectangle(cornerRadius: 28)
                     .fill(
                         LinearGradient(
@@ -178,6 +234,11 @@ struct CustomTabBar: View {
 }
 
 #Preview {
-    Tabview()
-        .previewInterfaceOrientation(.landscapeLeft)
+    Tabview(concurso: ConcursoModel(
+        id_concurso: "abc-123",
+        nombre_evento: "Hackathon 2026",
+        fecha_inicio: "01/06/2026",
+        fecha_fin: "03/06/2026"
+    ))
+    .previewInterfaceOrientation(.landscapeLeft)
 }

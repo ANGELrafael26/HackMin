@@ -130,11 +130,14 @@ struct CrearEventoView: View {
                         CustomButton(
                             action: {
                                 vm.guardarEvento()
-                                if !vm.mostrarError {
-                                    withAnimation(.easeInOut(duration: 0.35)) {
-                                        mostrarTabView = true
-                                    }
-                                }
+                                        if !vm.mostrarError {
+                                            if let concurso = vm.construirConcursoPublico() {
+                                                concursoActivo = concurso
+                                            }
+                                            withAnimation(.easeInOut(duration: 0.35)) {
+                                                mostrarTabView = true
+                                            }
+                                        }
                             },
                             style: .standard(
                                 fontColor: .white,

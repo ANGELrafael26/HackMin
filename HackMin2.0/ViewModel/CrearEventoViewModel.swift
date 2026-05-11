@@ -63,6 +63,26 @@ final class CrearEventoViewModel: ObservableObject {
             fecha_fin: formatter.string(from: fechaFin)
         )
     }
+    
+    func construirConcursoPublico() -> ConcursoModel? {
+        guard !nombreEvento.trimmingCharacters(in: .whitespaces).isEmpty else {
+            mensajeError = "El nombre del evento es obligatorio."
+            mostrarError = true
+            return nil
+        }
+        guard fechaFin >= fechaInicio else {
+            mensajeError = "La fecha de fin debe ser después de la fecha de inicio."
+            mostrarError = true
+            return nil
+        }
+        mostrarError = false
+        return ConcursoModel(
+            id_concurso: UUID().uuidString,
+            nombre_evento: nombreEvento.trimmingCharacters(in: .whitespaces),
+            fecha_inicio: formatter.string(from: fechaInicio),
+            fecha_fin: formatter.string(from: fechaFin)
+        )
+    }
 
     // MARK: - Actions
     func guardarEvento() {

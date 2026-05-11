@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var mostrarTabView = false
+    @State private var mostrarTabView: Bool = false
     @State private var concursoActivo: ConcursoModel? = nil
 
     var body: some View {
-        if mostrarTabView {
-            Tabview()
+        if mostrarTabView, let concurso = concursoActivo {
+            Tabview(concurso: concurso)
         } else {
             CrearEventoView(
                 concursoActivo: $concursoActivo,

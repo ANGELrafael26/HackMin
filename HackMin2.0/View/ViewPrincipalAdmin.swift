@@ -53,7 +53,9 @@ struct ViewPrincipalAdmin: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
         .fullScreenCover(isPresented: $vm.mostrarTabView) {
-            Tabview()
+            if let concurso = vm.concursoActivo {
+                Tabview(concurso: concurso)
+            }
         }
     }
 }

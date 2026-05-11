@@ -11,4 +11,5 @@ import Combine
 
 class TabViewModel: ObservableObject {
     @Published var tabSeleccionado: Int = 0
+    @Published var mostrarAlertaCerrar: Bool = false
 }
