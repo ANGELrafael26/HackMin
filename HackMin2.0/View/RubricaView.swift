@@ -128,8 +128,7 @@ struct RubricaView: View {
             .sheet(isPresented: $mostrarCrearRubrica) {
 
                 CrearRubricaView(
-                    isPresented: $mostrarCrearRubrica,
-                    idConcurso: vm.idConcurso
+                    isPresented: $mostrarCrearRubrica
                 ) { nuevaRubrica in
 
                     withAnimation(
@@ -368,4 +367,10 @@ struct RubricaCardView: View {
             y: 5
         )
     }
+}
+
+#Preview {
+    RubricaView(
+        mostrarHeader: .constant(true)
+    )
 }

@@ -159,12 +159,6 @@ struct RubricaJuezView: View {
                             CustomButton(
                                 action: {
                                     vm.enviarCalificacion(rubrica: rubrica, equipo: equipo)
-                                    if vm.calificacionEnviada {
-                                        onCalificado()
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-                                            dismiss()
-                                        }
-                                    }
                                 },
                                 style: .standard(
                                     fontColor: .white,
@@ -176,6 +170,14 @@ struct RubricaJuezView: View {
                                     height: geo.size.height * 0.09
                                 )
                             )
+                            .onChange(of: vm.calificacionEnviada) { enviada in
+                                if enviada {
+                                    onCalificado()
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                                        dismiss()
+                                    }
+                                }
+                            }
                             .padding(.bottom, geo.size.height * 0.04)
                         }
                         .padding(.top, geo.size.height * 0.04)

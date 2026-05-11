@@ -52,7 +52,7 @@ class RubricaJuezViewModel: ObservableObject {
     }
 
     func enviarCalificacion(rubrica: RubricaModel, equipo: EquipoModel) {
-        // Todos los criterios deben tener valor
+        // Validar que todos los criterios tienen valor
         for criterio in rubrica.criterios {
             let val = calificaciones[criterio.id_criterio] ?? ""
             guard let num = Double(val) else {
@@ -75,8 +75,24 @@ class RubricaJuezViewModel: ObservableObject {
         }
 
         mostrarError = false
-        calificacionEnviada = true
-        print("✅ Calificación enviada — \(equipo.nombre_equipo) | Total: \(String(format: "%.1f", total))%")
-        calificaciones.forEach { print("  \($0.key): \($0.value)") }
+
+        // Construir el diccionario de puntajes
+        let puntajes: [String: Double] = calificaciones.compactMapValues { Double($0) }
+
+        EquipoRubricaService.shared.calificarEquipo(
+            id_equipo:          equipo.id_equipo,
+            puntajes_asignados: puntajes
+        ) { [weak self] result in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                switch result {
+                case .success:
+                    self.calificacionEnviada = true
+                case .failure(let error):
+                    self.mensajeError = error.localizedDescription
+                    self.mostrarError = true
+                }
+            }
+        }
     }
 }
