@@ -18,12 +18,41 @@ class RubricaJuezViewModel: ObservableObject {
     func calificacion(para criterio: CriterioModel) -> Binding<String> {
         Binding(
             get: { self.calificaciones[criterio.id_criterio] ?? "" },
-            set: { self.calificaciones[criterio.id_criterio] = $0 }
+            set: { nuevoValor in
+                if nuevoValor.isEmpty {
+                    self.calificaciones[criterio.id_criterio] = nuevoValor
+                    return
+                }
+                if let num = Double(nuevoValor) {
+                    if num <= criterio.puntaje_maximo {
+                        self.calificaciones[criterio.id_criterio] = nuevoValor
+                    } else {
+                        self.calificaciones[criterio.id_criterio] = String(Int(criterio.puntaje_maximo))
+                    }
+                }
+               
+            }
         )
     }
 
+    func puntajeTotal(rubrica: RubricaModel) -> Double {
+        rubrica.criterios.compactMap { criterio -> Double? in
+            guard let val = calificaciones[criterio.id_criterio],
+                  let num = Double(val),
+                  criterio.puntaje_maximo > 0 else { return nil }
+            return (num / criterio.puntaje_maximo) * criterio.peso_porcentual
+        }.reduce(0, +)
+    }
+
+    // Indica si el criterio tiene un valor válido ingresado
+    func calificacionValida(para criterio: CriterioModel) -> Bool {
+        guard let val = calificaciones[criterio.id_criterio],
+              let num = Double(val) else { return false }
+        return num >= 0 && num <= criterio.puntaje_maximo
+    }
+
     func enviarCalificacion(rubrica: RubricaModel, equipo: EquipoModel) {
-        // Validar que todos los criterios tengan calificación
+        // Todos los criterios deben tener valor
         for criterio in rubrica.criterios {
             let val = calificaciones[criterio.id_criterio] ?? ""
             guard let num = Double(val) else {
@@ -37,17 +66,17 @@ class RubricaJuezViewModel: ObservableObject {
                 return
             }
         }
+
+        let total = puntajeTotal(rubrica: rubrica)
+        guard total <= 100 else {
+            mensajeError = "El puntaje total no puede superar 100% (actual: \(String(format: "%.1f", total))%)."
+            mostrarError = true
+            return
+        }
+
         mostrarError = false
         calificacionEnviada = true
-        print("Calificación enviada para equipo: \(equipo.nombre_equipo)")
+        print("✅ Calificación enviada — \(equipo.nombre_equipo) | Total: \(String(format: "%.1f", total))%")
         calificaciones.forEach { print("  \($0.key): \($0.value)") }
-    }
-
-    func puntajeTotal(rubrica: RubricaModel) -> Double {
-        rubrica.criterios.compactMap { criterio -> Double? in
-            guard let val = calificaciones[criterio.id_criterio],
-                  let num = Double(val) else { return nil }
-            return (num / criterio.puntaje_maximo) * criterio.peso_porcentual
-        }.reduce(0, +)
     }
 }
