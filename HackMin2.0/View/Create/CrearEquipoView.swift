@@ -135,9 +135,11 @@ struct CrearEquipoView: View {
                         // Botón Agregar
                         CustomButton(
                             action: {
-                                if let equipo = vm.guardarEquipo(idConcurso: idConcurso) {
-                                    onGuardar(equipo)
-                                    isPresented = false
+                                vm.guardarEquipo { equipo in
+                                    if let equipo {
+                                        onGuardar(equipo)
+                                        isPresented = false
+                                    }
                                 }
                             },
                             style: .standard(

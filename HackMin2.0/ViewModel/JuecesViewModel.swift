@@ -16,10 +16,7 @@ class JuecesViewModel: ObservableObject {
     
     var idConcurso: String = CurrentCourseService.shared.currentCursoID
 
-    // Función para obtener los jueces desde Firebase
     func cargarJueces() {
-        // Asegurarnos de que el ID no esté vacío antes de buscar
-        print("Primer debugg \(CurrentCourseService.shared.currentCursoID)")
         guard !idConcurso.isEmpty else {
             print("Error: idConcurso está vacío.")
             self.cargando = false

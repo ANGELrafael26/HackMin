@@ -71,7 +71,7 @@ struct JuecesView: View {
             vm.cargarJueces()
         }
         .sheet(isPresented: $mostrarCrearJuez, onDismiss: {
-            vm.cargarJueces() // ← Recarga desde Firebase al cerrar el sheet
+            vm.cargarJueces()
         }) {
             CrearJuezView(
                 isPresented: $mostrarCrearJuez,

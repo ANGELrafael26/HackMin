@@ -60,8 +60,6 @@ class EquipoRubricaService {
         equipoDAO.getEquipos(porConcurso: idConcurso, completion: completion)
     }
 
-    // MARK: - Admin: Rúbrica
-
     func crearRubrica(
         nombre:      String,
         descripcion: String,

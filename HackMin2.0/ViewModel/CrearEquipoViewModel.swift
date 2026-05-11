@@ -17,11 +17,8 @@ class CrearEquipoViewModel: ObservableObject {
     @Published var integrantesTexto: String = ""
     @Published var mostrarError: Bool = false
     @Published var mensajeError: String = ""
+    @Published var cargando: Bool = false
 
-    // Instancia del DAO
-    private let equipoDAO = EquipoDAO()
-
-    // Convierte el texto de integrantes separado por comas en array
     var integrantesArray: [String] {
         integrantesTexto
             .split(separator: ",")
@@ -29,56 +26,46 @@ class CrearEquipoViewModel: ObservableObject {
             .filter { !$0.isEmpty }
     }
 
-    func guardarEquipo(idConcurso: String) -> EquipoModel? {
+    func guardarEquipo(completion: @escaping (EquipoModel?) -> Void) {
         guard !nombreEquipo.trimmingCharacters(in: .whitespaces).isEmpty else {
             mensajeError = "El nombre del equipo es obligatorio."
             mostrarError = true
-            return nil
+            completion(nil)
+            return
         }
         guard !nombreProyecto.trimmingCharacters(in: .whitespaces).isEmpty else {
             mensajeError = "El nombre del proyecto es obligatorio."
             mostrarError = true
-            return nil
+            completion(nil)
+            return
         }
         guard !integrantesArray.isEmpty else {
             mensajeError = "Agrega al menos un integrante."
             mostrarError = true
-            return nil
+            completion(nil)
+            return
         }
-        
+
         mostrarError = false
-        
-        let nuevoEquipo = EquipoModel(
-            id_equipo: UUID().uuidString,
-            id_concurso: CurrentCourseService.shared.currentCursoID,
-            problematica: problematica.trimmingCharacters(in: .whitespaces),
-            nombre_equipo: nombreEquipo.trimmingCharacters(in: .whitespaces),
-            nombre_proyecto: nombreProyecto.trimmingCharacters(in: .whitespaces),
-            integrantes: integrantesArray
-        )
-        
-        // Llamada al DAO para guardar
-        equipoDAO.saveEquipo(nuevoEquipo) { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success():
-                    self?.mostrarError = false
-                    // Aquí puedes agregar lógica adicional si necesitas limpiar los campos
-                    // o notificar a la vista que se guardó exitosamente.
-                case .failure(let error):
-                    self?.mensajeError = error.localizedDescription
-                    self?.mostrarError = true
-                }
+        cargando = true
+
+        EquipoRubricaService.shared.crearEquipo(
+            nombre:         nombreEquipo.trimmingCharacters(in: .whitespaces),
+            nombreProyecto: nombreProyecto.trimmingCharacters(in: .whitespaces),
+            problematica:   problematica.trimmingCharacters(in: .whitespaces),
+            integrantes:    integrantesArray,
+            fotoPerfil:     EquipoModel.fotoPredeterminada
+        ) { [weak self] result in
+            guard let self else { return }
+            self.cargando = false
+            switch result {
+            case .success(let equipo):
+                completion(equipo)
+            case .failure(let error):
+                self.mensajeError = error.localizedDescription
+                self.mostrarError = true
+                completion(nil)
             }
         }
-        
-        return EquipoModel(
-                    id_equipo: UUID().uuidString,
-                    id_concurso: idConcurso,
-                    problematica: problematica,
-                    nombre_equipo: nombreEquipo,
-                    nombre_proyecto: nombreProyecto,
-                    integrantes: integrantesArray
-                )
     }
 }

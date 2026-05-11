@@ -81,7 +81,9 @@ struct EquiposView: View {
             .onAppear {
                 vm.cargarEquipos()
             }
-            .sheet(isPresented: $mostrarCrearEquipo) {
+            .sheet(isPresented: $mostrarCrearEquipo, onDismiss: {
+                vm.cargarEquipos()
+            }) {
                 CrearEquipoView(
                     isPresented: $mostrarCrearEquipo,
                     idConcurso: vm.idConcurso
