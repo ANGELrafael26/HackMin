@@ -212,21 +212,16 @@ class ConcursoJuezService {
  
 
     func loginJuez(
-        correo:     String,
-        contrasena: String,
+        user:     String,
         completion: @escaping (Result<(JuezModel, ConcursoModel), Error>) -> Void
     ) {
-        juezDAO.getJuezByCorreo(correo) { [weak self] result in
+        juezDAO.getJuezByCorreo(user) { [weak self] result in
             guard let self else { return }
             switch result {
             case .failure(let error):
                 completion(.failure(error))
  
             case .success(let juez):
-                guard juez.contrasena == contrasena else {
-                    completion(.failure(JuezError.wrongPassword))
-                    return
-                }
                 guard let idConcurso = juez.id_concurso_asignado else {
                     completion(.failure(JuezError.notAssignedToConcurso))
                     return

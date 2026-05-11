@@ -56,7 +56,7 @@ enum IDGenerator {
     }
     
     static func newJuezID() -> String {
-        let suffix = UUID().uuidString.prefix(6).uppercased()
+        let suffix = UUID().uuidString.prefix(2).uppercased()
         return "JUEZ-\(suffix)"
     }
 }

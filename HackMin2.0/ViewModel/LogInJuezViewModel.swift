@@ -34,6 +34,13 @@ final class LogInJuezViewModel: ObservableObject {
         isLoading = true
         mostrarError = false
 
+//        ConcursoJuezService.shared.loginJuez(user: "maria@lab.com", contrasena: "1234") { result in
+//            switch result {
+//            case .success(let (juez, concurso)): print("\(juez.alias) → \(concurso.nombre_evento)")
+//            case .failure(let error):            print(error.localizedDescription)
+//            }
+//        }
+        
 //        dao.loginJuez(codigo: codigo.trimmingCharacters(in: .whitespaces)) { [weak self] result in
 //            guard let self else { return }
 //            self.isLoading = false
