@@ -51,7 +51,7 @@ struct ConectorConcursoModel {
 
 enum IDGenerator {
     static func newConcursoID() -> String {
-        let suffix = UUID().uuidString.prefix(6).uppercased()
+        let suffix = UUID().uuidString.prefix(2).uppercased()
         return "CONCURSO-\(suffix)"
     }
     
@@ -60,17 +60,21 @@ enum IDGenerator {
         return "JUEZ-\(suffix)"
     }
     static func newRubricaID() -> String {
-        let suffix = UUID().uuidString.prefix(6).uppercased()
+        let suffix = UUID().uuidString.prefix(2).uppercased()
         return "RUBRICA-\(suffix)"
     }
 
     static func newCriterioID() -> String {
-        let suffix = UUID().uuidString.prefix(6).uppercased()
+        let suffix = UUID().uuidString.prefix(2).uppercased()
         return "CRITERIO-\(suffix)"
     }
 
     static func newCalificacionID() -> String {
-        let suffix = UUID().uuidString.prefix(6).uppercased()
+        let suffix = UUID().uuidString.prefix(2).uppercased()
         return "CALIF-\(suffix)"
+    }
+    static func newEquipoID() -> String {
+        let suffix = UUID().uuidString.prefix(2).uppercased()
+        return "EQUIPO-\(suffix)"
     }
 }

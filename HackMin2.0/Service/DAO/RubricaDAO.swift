@@ -75,12 +75,14 @@ enum RubricaError: LocalizedError {
     case serializationFailed
     case deserializationFailed
     case rubricaNotFound
+    case pesosNoSuman100
     
     var errorDescription: String? {
         switch self {
         case .serializationFailed:   return "No se pudo serializar la rúbrica."
         case .deserializationFailed: return "No se pudo deserializar la rúbrica."
         case .rubricaNotFound:       return "Rúbrica no encontrada."
+        case .pesosNoSuman100: return "Los pesos de los criterios deben sumar exactamente 100%."
         }
     }
 }
