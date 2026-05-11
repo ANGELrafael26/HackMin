@@ -12,6 +12,10 @@ struct Tabview: View {
     @StateObject private var vm = TabViewModel()
     @Namespace private var tabAnimation
     @Environment(\.dismiss) private var dismiss
+    
+    private var mostrarHeader: Bool {
+            vm.tabSeleccionado == 0 || vm.tabSeleccionado == 1 || vm.tabSeleccionado == 2
+        }
 
     var body: some View {
         GeometryReader { geo in
@@ -21,85 +25,84 @@ struct Tabview: View {
                     .scaledToFill()
                     .ignoresSafeArea()
 
-                // Contenido pestañas
                 ZStack {
                     switch vm.tabSeleccionado {
                     case 0:
-                        EquiposView()
-                            .transition(.asymmetric(
-                                insertion: .move(edge: .leading).combined(with: .opacity),
-                                removal: .move(edge: .trailing).combined(with: .opacity)
-                            ))
+                        EquiposView(mostrarHeader: $vm.mostrarHeader)
+                                   .transition(vm.transicion(para: 0))
                     case 1:
                         JuecesView()
-                            .transition(.asymmetric(
-                                insertion: .move(edge: .leading).combined(with: .opacity),
-                                removal: .move(edge: .trailing).combined(with: .opacity)
-                            ))
+                            .transition(vm.transicion(para: 1))
                     case 2:
-                        RubricaView()
-                            .transition(.asymmetric(
-                                insertion: .move(edge: .leading).combined(with: .opacity),
-                                removal: .move(edge: .trailing).combined(with: .opacity)
-                            ))
+                        RubricaView(mostrarHeader: $vm.mostrarHeader)
+                            .transition(vm.transicion(para: 2))
                     default:
                         EmptyView()
                     }
                 }
                 .animation(.easeInOut(duration: 0.3), value: vm.tabSeleccionado)
+                .animation(.easeInOut(duration: 0.3), value: vm.tabSeleccionado)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding(.bottom, geo.size.height * 0.13)
+                .onChange(of: vm.tabSeleccionado) { nuevoTab in
+                    vm.tabAnterior = vm.tabSeleccionado
+                    vm.mostrarHeader = true
+                }
 
-                // Header superior
-                VStack {
-                    ZStack {
-                        // Nombre del evento centrado
-                        Text(concurso.nombre_evento)
-                            .font(.system(
-                                size: geo.size.width * 0.030,
-                                weight: .bold,
-                                design: .rounded
-                            ))
-                            .foregroundColor(.black)
-                            .lineLimit(1)
-                            .truncationMode(.tail)
-                            .frame(maxWidth: geo.size.width * 0.55)
+                if vm.mostrarHeader {
+                    VStack {
+                        ZStack {
+                            Text(concurso.nombre_evento)
+                                .font(.system(
+                                    size: geo.size.width * 0.030,
+                                    weight: .bold,
+                                    design: .rounded
+                                ))
+                                .foregroundColor(.black)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                                .frame(maxWidth: geo.size.width * 0.55)
 
-                        HStack {
-                            Button {
-                                vm.mostrarAlertaCerrar = true
-                            } label: {
-                                HStack(spacing: 6) {
-                                    Image(systemName: "xmark.circle.fill")
-                                        .font(.system(size: geo.size.width * 0.018, weight: .semibold))
-                                    Text("Cerrar evento")
-                                        .font(.system(
-                                            size: geo.size.width * 0.014,
-                                            weight: .semibold,
-                                            design: .rounded
-                                        ))
+                            HStack {
+                                Button {
+                                    vm.mostrarAlertaCerrar = true
+                                } label: {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "xmark.circle.fill")
+                                            .font(.system(size: geo.size.width * 0.018, weight: .semibold))
+                                        Text("Cerrar evento")
+                                            .font(.system(
+                                                size: geo.size.width * 0.014,
+                                                weight: .semibold,
+                                                design: .rounded
+                                            ))
+                                    }
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, geo.size.width * 0.02)
+                                    .padding(.vertical, geo.size.height * 0.015)
+                                    .background(
+                                        Capsule()
+                                            .fill(Color.red.opacity(0.85))
+                                            .shadow(color: .red.opacity(0.4), radius: 6, x: 0, y: 3)
+                                    )
                                 }
-                                .foregroundColor(.white)
-                                .padding(.horizontal, geo.size.width * 0.02)
-                                .padding(.vertical, geo.size.height * 0.015)
-                                .background(
-                                    Capsule()
-                                        .fill(Color.red.opacity(0.85))
-                                        .shadow(color: .red.opacity(0.4), radius: 6, x: 0, y: 3)
-                                )
+                                Spacer()
                             }
-                            Spacer()
+                            .padding(.leading, geo.size.width * 0.03)
                         }
-                        .padding(.leading, geo.size.width * 0.03)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, geo.size.height * 0.055)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, geo.size.height * 0.05)
 
-                    Spacer()
+                        Spacer()
+                    }
+                    .transition(.opacity)
+                    .animation(.easeInOut(duration: 0.2), value: vm.mostrarHeader)
                 }
 
                 CustomTabBar(
                     tabSeleccionado: $vm.tabSeleccionado,
+                    tabAnterior: $vm.tabAnterior,
+                    mostrarHeader: $vm.mostrarHeader,
                     geo: geo,
                     namespace: tabAnimation
                 )
@@ -120,8 +123,10 @@ struct Tabview: View {
 // MARK: - Custom Tab Bar
 struct CustomTabBar: View {
     @Binding var tabSeleccionado: Int
-    let geo: GeometryProxy
-    var namespace: Namespace.ID
+       @Binding var tabAnterior: Int
+       @Binding var mostrarHeader: Bool
+       let geo: GeometryProxy
+       var namespace: Namespace.ID
 
     let tabs: [(String, String)] = [
         ("Equipos",   "person.3.fill"),
@@ -136,7 +141,9 @@ struct CustomTabBar: View {
 
                 Button {
                     withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                        tabAnterior = tabSeleccionado
                         tabSeleccionado = index
+                        mostrarHeader = true
                     }
                 } label: {
                     VStack(spacing: geo.size.height * 0.008) {

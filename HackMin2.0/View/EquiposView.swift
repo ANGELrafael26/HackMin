@@ -10,6 +10,7 @@ import SwiftUI
 struct EquiposView: View {
     @StateObject private var vm = EquiposViewModel()
     @State private var mostrarCrearEquipo = false
+    @Binding var mostrarHeader: Bool
     
     let columns = [
         GridItem(.flexible(), spacing: 16),
@@ -38,7 +39,8 @@ struct EquiposView: View {
                             LazyVGrid(columns: columns, spacing: geo.size.height * 0.03) {
                                 ForEach(vm.equipos, id: \.id_equipo) { equipo in
                                     NavigationLink(destination: DetalleEquipoView(equipo: equipo)) {
-                                        EquipoCardView(equipo: equipo, geo: geo)
+                                        EquipoCardView(equipo: equipo, geo: geo).onAppear  { mostrarHeader = false }
+                                            .onDisappear { mostrarHeader = true }
                                     }
                                     .buttonStyle(.plain)
                                 }
@@ -138,10 +140,4 @@ struct EquipoCardView: View {
     }
 }
 
-#Preview {
-    ZStack {
-        Image("Diseño7").resizable().scaledToFill().ignoresSafeArea()
-        EquiposView()
-    }
-    .previewInterfaceOrientation(.landscapeLeft)
-}
+

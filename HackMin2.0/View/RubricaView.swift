@@ -9,6 +9,8 @@ import SwiftUI
 struct RubricaView: View {
     @StateObject private var vm = RubricaViewModel()
     @State private var mostrarCrearRubrica = false
+    @Binding var mostrarHeader: Bool
+    
 
     var body: some View {
         NavigationStack {
@@ -33,7 +35,8 @@ struct RubricaView: View {
                                 ForEach(vm.rubricas, id: \.id_rubrica) { rubrica in
                                     NavigationLink(destination: DetallRubricaView(rubrica: rubrica, onUpdate: { rubricaActualizada in
                                         vm.actualizarRubrica(rubricaActualizada)
-                                    })) {
+                                    }).onAppear  { mostrarHeader = false }
+                                        .onDisappear { mostrarHeader = true }) {
                                         RubricaCardView(rubrica: rubrica, geo: geo)
                                     }
                                     .buttonStyle(.plain)
@@ -172,10 +175,4 @@ struct RubricaCardView: View {
     }
 }
 
-#Preview {
-    ZStack {
-        Image("Diseño7").resizable().scaledToFill().ignoresSafeArea()
-        RubricaView()
-    }
-    .previewInterfaceOrientation(.landscapeLeft)
-}
+
