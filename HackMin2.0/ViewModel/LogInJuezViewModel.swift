@@ -11,52 +11,57 @@ import Combine
 @MainActor
 final class LogInJuezViewModel: ObservableObject {
 
-    // MARK: - Published Fields
     @Published var codigo: String = ""
 
-    // MARK: - UI State
     @Published var mostrarError: Bool = false
     @Published var mensajeError: String = ""
     @Published var isLoading: Bool = false
     @Published var juezAutenticado: JuezModel? = nil
 
-    // MARK: - DAO
     private let dao = JuezDAO()
 
-    // MARK: - Actions
-    func ingresar() {
+    func ingresar(completion: @escaping (Bool) -> Void) {
+        print("First print")
+
         guard !codigo.trimmingCharacters(in: .whitespaces).isEmpty else {
             mensajeError = "Por favor ingresa tu código."
             mostrarError = true
+            completion(false)
             return
         }
 
         isLoading = true
         mostrarError = false
 
-//        ConcursoJuezService.shared.loginJuez(user: "maria@lab.com", contrasena: "1234") { result in
-//            switch result {
-//            case .success(let (juez, concurso)): print("\(juez.alias) → \(concurso.nombre_evento)")
-//            case .failure(let error):            print(error.localizedDescription)
-//            }
-//        }
-        
-//        dao.loginJuez(codigo: codigo.trimmingCharacters(in: .whitespaces)) { [weak self] result in
-//            guard let self else { return }
-//            self.isLoading = false
-//
-//            switch result {
-//            case .success(let juez):
-//                self.juezAutenticado = juez
-//                CurrentUserManager.shared.setCurrentJuez(juez: juez)
-//            case .failure(let error):
-//                self.mensajeError = error.localizedDescription
-//                self.mostrarError = true
-//            }
-//        }
+        ConcursoJuezService.shared.loginJuez(id_juez: codigo) { [weak self] result in
+            print("second print")
+            DispatchQueue.main.async {
+
+                guard let self = self else { return }
+
+                self.isLoading = false
+
+                switch result {
+
+                case .success(let (juez, concurso)):
+
+                    print("\(juez.nombre) → \(concurso.nombre_evento)")
+
+                    self.juezAutenticado = juez
+                    completion(true)
+
+                case .failure(let error):
+                    print("third print")
+
+                    self.mensajeError = error.localizedDescription
+                    self.mostrarError = true
+
+                    completion(false)
+                }
+            }
+        }
     }
 
-    // MARK: - Reset
     func resetForm() {
         codigo = ""
         mostrarError = false

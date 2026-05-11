@@ -50,7 +50,7 @@ class CrearEquipoViewModel: ObservableObject {
         
         let nuevoEquipo = EquipoModel(
             id_equipo: UUID().uuidString,
-            id_concurso: idConcurso,
+            id_concurso: CurrentCourseService.shared.currentCursoID,
             problematica: problematica.trimmingCharacters(in: .whitespaces),
             nombre_equipo: nombreEquipo.trimmingCharacters(in: .whitespaces),
             nombre_proyecto: nombreProyecto.trimmingCharacters(in: .whitespaces),

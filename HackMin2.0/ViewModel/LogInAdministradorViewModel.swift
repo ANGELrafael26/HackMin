@@ -14,7 +14,7 @@ class LogInAdministradorViewModel: ObservableObject {
     @Published var navegarPrincipal: Bool = false
     @Published var navegarRegistro: Bool = false
     @Published var cargando: Bool = false
-
+    
     func ingresar() {
         guard !usuario.isEmpty, !contrasena.isEmpty else {
             mensajeError = "Por favor completa todos los campos."
@@ -50,7 +50,7 @@ class LogInAdministradorViewModel: ObservableObject {
             }
         }
     }
-
+    
     func crearAdministrador() {
         navegarRegistro = true
     }

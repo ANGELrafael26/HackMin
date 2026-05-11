@@ -34,7 +34,7 @@ class JuezDAO {
     }
  
     // Login de juez por correo
-    func getJuezByCorreo(_ correo: String, completion: @escaping (Result<JuezModel, Error>) -> Void) {
+    func getJuezByID(_ correo: String, completion: @escaping (Result<JuezModel, Error>) -> Void) {
         database.child(juecesPath)
             .queryOrdered(byChild: "correo")
             .queryEqual(toValue: correo)

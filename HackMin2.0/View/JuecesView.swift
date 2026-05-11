@@ -10,11 +10,11 @@ import SwiftUI
 struct JuecesView: View {
     @StateObject private var vm = JuecesViewModel()
     @State private var mostrarCrearJuez = false
-
+    
     var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .topTrailing) {
-
+                
                 // Grid scroll de jueces
                 ScrollView(.vertical, showsIndicators: false) {
                     if vm.jueces.isEmpty {
@@ -39,7 +39,7 @@ struct JuecesView: View {
                         .padding(.bottom, geo.size.height * 0.06)
                     }
                 }
-
+                
                 // Botón agregar juez — esquina superior derecha
                 Button {
                     mostrarCrearJuez = true
@@ -67,16 +67,18 @@ struct JuecesView: View {
                 .padding(.trailing, geo.size.width * 0.03)
             }
         }
-        .onAppear {
-                    vm.cargarJueces()
-                }
-        .sheet(isPresented: $mostrarCrearJuez) {
+        .onAppear{
+            vm.cargarJueces()
+        }
+        .sheet(isPresented: $mostrarCrearJuez, onDismiss: {
+            vm.cargarJueces() // ← Recarga desde Firebase al cerrar el sheet
+        }) {
             CrearJuezView(
                 isPresented: $mostrarCrearJuez,
                 idConcurso: vm.idConcurso
             ) { nuevoJuez in
                 withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
-                    vm.agregarJuez(nuevoJuez)
+                    vm.agregarJuez(nuevoJuez) // Actualización optimista inmediata
                 }
             }
             .presentationDetents([.fraction(0.92)])
@@ -91,7 +93,7 @@ struct JuezCardView: View {
 
     let juez: JuezModel
     let geo: GeometryProxy
-
+    
     var body: some View {
 
         HStack(spacing: geo.size.width * 0.025) {
@@ -108,7 +110,7 @@ struct JuezCardView: View {
                     height: geo.size.width * 0.07
                 )
                 .overlay(
-                    Text(String(juez.alias.prefix(1)).uppercased())
+                    Text(String(juez.nombre.prefix(1)).uppercased())
                         .font(.system(
                             size: geo.size.width * 0.028,
                             weight: .bold,
@@ -122,17 +124,17 @@ struct JuezCardView: View {
                 )
                 .shadow(color: .orange.opacity(0.35), radius: 8, x: 0, y: 4)
 
-
+            
+            // Info del juez
             VStack(alignment: .leading, spacing: geo.size.height * 0.008) {
-
-                Text(juez.alias)
+                Text(juez.nombre)
                     .font(.system(
                         size: geo.size.width * 0.016,
                         weight: .bold,
                         design: .rounded
                     ))
                     .foregroundColor(.black)
-
+                
                 Text("Juez evaluador")
                     .font(.system(
                         size: geo.size.width * 0.011,
@@ -140,9 +142,8 @@ struct JuezCardView: View {
                     ))
                     .foregroundColor(.black.opacity(0.55))
             }
-
+            
             Spacer()
-
             VStack(alignment: .trailing, spacing: geo.size.height * 0.006) {
 
                 Text("Código")

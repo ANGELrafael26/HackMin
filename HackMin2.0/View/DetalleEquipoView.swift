@@ -157,13 +157,13 @@ struct JuezCalificacionCard: View {
                     )
                     .frame(width: geo.size.width * 0.055, height: geo.size.width * 0.055)
                     .overlay(
-                        Text(String(item.juez.alias.prefix(1)).uppercased())
+                        Text(String(item.juez.nombre.prefix(1)).uppercased())
                             .font(.system(size: geo.size.width * 0.02, weight: .bold, design: .rounded))
                             .foregroundColor(.black)
                     )
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(item.juez.alias)
+                    Text(item.juez.nombre)
                         .font(.system(size: geo.size.width * 0.016, weight: .semibold, design: .rounded))
                         .foregroundColor(.black)
                     Text("Juez evaluador")

@@ -14,11 +14,12 @@ class JuecesViewModel: ObservableObject {
     @Published var mostrarCrearJuez: Bool = false
     @Published var cargando: Bool = true // Nueva variable para controlar el estado de carga
     
-    var idConcurso: String = ""
+    var idConcurso: String = CurrentCourseService.shared.currentCursoID
 
     // Función para obtener los jueces desde Firebase
     func cargarJueces() {
         // Asegurarnos de que el ID no esté vacío antes de buscar
+        print("Primer debugg \(CurrentCourseService.shared.currentCursoID)")
         guard !idConcurso.isEmpty else {
             print("Error: idConcurso está vacío.")
             self.cargando = false

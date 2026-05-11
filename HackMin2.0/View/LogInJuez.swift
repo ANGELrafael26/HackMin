@@ -59,13 +59,13 @@ struct LogInJuez: View {
 
                         CustomButton(
                             action: {
-                                vm.ingresar()
 
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    if !vm.mostrarError {
+                                vm.ingresar { success in
+                                    if success {
                                         mostrarEquipos = true
                                     }
                                 }
+
                             },
                             style: .standard(
                                 fontColor: .white,

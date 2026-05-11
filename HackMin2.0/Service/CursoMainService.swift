@@ -134,7 +134,7 @@ class ConcursoJuezService {
  
         let nuevoJuez = JuezModel(
             id_juez:    IDGenerator.newJuezID(),
-            nombre:     nombre,
+            alias:      nombre,
             correo:     correo,
             contrasena: contrasena
         )
@@ -212,21 +212,21 @@ class ConcursoJuezService {
  
 
     func loginJuez(
-        user:     String,
+        id_juez: String,
         completion: @escaping (Result<(JuezModel, ConcursoModel), Error>) -> Void
     ) {
-        juezDAO.getJuezByCorreo(user) { [weak self] result in
+        juezDAO.getJuez(id_juez: id_juez) { [weak self] result in  // ← cambio aquí
             guard let self else { return }
             switch result {
             case .failure(let error):
                 completion(.failure(error))
- 
+
             case .success(let juez):
                 guard let idConcurso = juez.id_concurso_asignado else {
                     completion(.failure(JuezError.notAssignedToConcurso))
                     return
                 }
- 
+
                 self.concursoDAO.getConcurso(id_concurso: idConcurso) { concursoResult in
                     switch concursoResult {
                     case .failure(let error):
