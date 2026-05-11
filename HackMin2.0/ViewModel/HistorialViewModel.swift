@@ -10,14 +10,7 @@ import SwiftUI
 import Combine
 
 class HistorialViewModel: ObservableObject {
-    @Published var concursos: [ConcursoModel] = [
-        ConcursoModel(
-            id_concurso: "abc-123-xyz",
-            nombre_evento: "Hackathon 2026",
-            fecha_inicio: "01/06/2026",
-            fecha_fin: "03/06/2026"
-        )
-    ]
+    @Published var concursos: [ConcursoModel] = []
     @Published var concursoSeleccionado: ConcursoModel? = nil
     @Published var mostrarDetalle: Bool = false
 
