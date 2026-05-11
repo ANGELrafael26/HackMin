@@ -38,9 +38,12 @@ struct EquiposView: View {
                         } else {
                             LazyVGrid(columns: columns, spacing: geo.size.height * 0.03) {
                                 ForEach(vm.equipos, id: \.id_equipo) { equipo in
-                                    NavigationLink(destination: DetalleEquipoView(equipo: equipo)) {
-                                        EquipoCardView(equipo: equipo, geo: geo).onAppear  { mostrarHeader = false }
+                                    NavigationLink(destination:
+                                        DetalleEquipoView(equipo: equipo)
+                                            .onAppear  { mostrarHeader = false }
                                             .onDisappear { mostrarHeader = true }
+                                    ) {
+                                        EquipoCardView(equipo: equipo, geo: geo)
                                     }
                                     .buttonStyle(.plain)
                                 }
@@ -141,3 +144,10 @@ struct EquipoCardView: View {
 }
 
 
+#Preview {
+    ZStack {
+        Image("Diseño7").resizable().scaledToFill().ignoresSafeArea()
+        EquiposView(mostrarHeader: .constant(true))
+    }
+    .previewInterfaceOrientation(.landscapeLeft)
+}

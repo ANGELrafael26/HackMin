@@ -9,31 +9,30 @@ import SwiftUI
 
 struct DetalleEquipoView: View {
     let equipo: EquipoModel
+    var onEliminar: (() -> Void)? = nil   
     @StateObject private var vm: DetalleEquipoViewModel
     @Environment(\.dismiss) private var dismiss
+    @State private var mostrarAlertaEliminar = false
 
-    init(equipo: EquipoModel) {
+    init(equipo: EquipoModel, onEliminar: (() -> Void)? = nil) {
         self.equipo = equipo
+        self.onEliminar = onEliminar
         _vm = StateObject(wrappedValue: DetalleEquipoViewModel(idEquipo: equipo.id_equipo))
     }
 
     var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .topLeading) {
-                // Fondo
                 Image("Diseño7")
                     .resizable()
                     .scaledToFill()
                     .ignoresSafeArea()
 
-                // Contenido principal
                 VStack(spacing: 0) {
 
                     // Header
                     HStack(spacing: geo.size.width * 0.025) {
-                        Button {
-                            dismiss()
-                        } label: {
+                        Button { dismiss() } label: {
                             Image(systemName: "chevron.left")
                                 .font(.system(size: geo.size.width * 0.022, weight: .semibold))
                                 .foregroundColor(.black)
@@ -45,7 +44,6 @@ struct DetalleEquipoView: View {
                                 )
                         }
 
-                        // Foto + nombre del equipo
                         HStack(spacing: geo.size.width * 0.018) {
                             Circle()
                                 .fill(Color.orange.opacity(0.3))
@@ -89,6 +87,26 @@ struct DetalleEquipoView: View {
                                         .stroke(Color.orange.opacity(0.4), lineWidth: 1)
                                 )
                         )
+
+                        // ← Botón eliminar equipo
+                        Button {
+                            mostrarAlertaEliminar = true
+                        } label: {
+                            HStack(spacing: 6) {
+                                Image(systemName: "trash.fill")
+                                    .font(.system(size: geo.size.width * 0.015, weight: .semibold))
+                                Text("Eliminar equipo")
+                                    .font(.system(size: geo.size.width * 0.012, weight: .semibold, design: .rounded))
+                            }
+                            .foregroundColor(.white)
+                            .padding(.horizontal, geo.size.width * 0.02)
+                            .padding(.vertical, geo.size.height * 0.018)
+                            .background(
+                                Capsule()
+                                    .fill(Color.red.opacity(0.85))
+                                    .shadow(color: .red.opacity(0.35), radius: 6, x: 0, y: 3)
+                            )
+                        }
                     }
                     .padding(.horizontal, geo.size.width * 0.04)
                     .padding(.top, geo.size.height * 0.04)
@@ -109,6 +127,15 @@ struct DetalleEquipoView: View {
         }
         .ignoresSafeArea()
         .navigationBarHidden(true)
+        .alert("¿Eliminar equipo?", isPresented: $mostrarAlertaEliminar) {
+            Button("Cancelar", role: .cancel) {}
+            Button("Eliminar", role: .destructive) {
+                onEliminar?()
+                dismiss()
+            }
+        } message: {
+            Text("Se eliminará \"\(equipo.nombre_equipo)\" permanentemente. ¿Deseas continuar?")
+        }
     }
 }
 
@@ -119,8 +146,6 @@ struct JuezCalificacionCard: View {
 
     var body: some View {
         VStack(spacing: 0) {
-
-            // Header del juez
             HStack(spacing: geo.size.width * 0.018) {
                 Circle()
                     .fill(
@@ -148,7 +173,6 @@ struct JuezCalificacionCard: View {
 
                 Spacer()
 
-                // Promedio del juez
                 Text(String(format: "%.1f", item.promedio))
                     .font(.system(size: geo.size.width * 0.022, weight: .bold, design: .rounded))
                     .foregroundColor(.orange)
@@ -166,13 +190,11 @@ struct JuezCalificacionCard: View {
             .padding(.horizontal, geo.size.width * 0.03)
             .padding(.vertical, geo.size.height * 0.025)
 
-            // Divider
             Rectangle()
                 .fill(Color.black.opacity(0.15))
                 .frame(height: 1)
                 .padding(.horizontal, geo.size.width * 0.03)
 
-            // Rubros y puntajes
             VStack(spacing: geo.size.height * 0.016) {
                 ForEach(item.puntajes, id: \.criterio) { puntaje in
                     HStack {
@@ -182,12 +204,10 @@ struct JuezCalificacionCard: View {
 
                         Spacer()
 
-                        // Barra de progreso
                         ZStack(alignment: .leading) {
                             RoundedRectangle(cornerRadius: 6)
                                 .fill(Color.black.opacity(0.1))
                                 .frame(width: geo.size.width * 0.18, height: geo.size.height * 0.018)
-
                             RoundedRectangle(cornerRadius: 6)
                                 .fill(
                                     LinearGradient(
@@ -214,8 +234,7 @@ struct JuezCalificacionCard: View {
         }
         .background(
             ZStack {
-                RoundedRectangle(cornerRadius: 22)
-                    .fill(.ultraThinMaterial)
+                RoundedRectangle(cornerRadius: 22).fill(.ultraThinMaterial)
                 RoundedRectangle(cornerRadius: 22)
                     .fill(
                         LinearGradient(

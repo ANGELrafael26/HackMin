@@ -88,13 +88,13 @@ struct JuecesView: View {
 
 // MARK: - Card de juez
 struct JuezCardView: View {
+
     let juez: JuezModel
     let geo: GeometryProxy
 
     var body: some View {
-        HStack(spacing: geo.size.width * 0.025) {
 
-            // Círculo con inicial
+        HStack(spacing: geo.size.width * 0.025) {
             Circle()
                 .fill(
                     LinearGradient(
@@ -122,8 +122,9 @@ struct JuezCardView: View {
                 )
                 .shadow(color: .orange.opacity(0.35), radius: 8, x: 0, y: 4)
 
-            // Info del juez
+
             VStack(alignment: .leading, spacing: geo.size.height * 0.008) {
+
                 Text(juez.alias)
                     .font(.system(
                         size: geo.size.width * 0.016,
@@ -142,11 +143,12 @@ struct JuezCardView: View {
 
             Spacer()
 
-            // Código del juez
             VStack(alignment: .trailing, spacing: geo.size.height * 0.006) {
+
                 Text("Código")
                     .font(.system(size: geo.size.width * 0.010, design: .rounded))
                     .foregroundColor(.black.opacity(0.5))
+
                 Text(juez.id_juez)
                     .font(.system(
                         size: geo.size.width * 0.015,
@@ -165,21 +167,60 @@ struct JuezCardView: View {
                             )
                     )
             }
+            Rectangle()
+                .fill(Color.black.opacity(0.12))
+                .frame(
+                    width: 1.5,
+                    height: geo.size.height * 0.07
+                )
+                .padding(.horizontal, geo.size.width * 0.01)
+
+            // Botón eliminar
+            Button {
+
+            } label: {
+
+                Image(systemName: "trash.fill")
+                    .font(.system(
+                        size: geo.size.width * 0.018,
+                        weight: .bold
+                    ))
+                    .foregroundColor(.red)
+                    .frame(
+                        width: geo.size.width * 0.05,
+                        height: geo.size.width * 0.05
+                    )
+                    .background(
+                        Circle()
+                            .fill(Color.red.opacity(0.12))
+                    )
+                    .overlay(
+                        Circle()
+                            .stroke(Color.red.opacity(0.25), lineWidth: 1)
+                    )
+            }
+            .buttonStyle(.plain)
         }
         .padding(.horizontal, geo.size.width * 0.03)
         .padding(.vertical, geo.size.height * 0.025)
         .background(
             ZStack {
+
                 RoundedRectangle(cornerRadius: 22)
                     .fill(.ultraThinMaterial)
+
                 RoundedRectangle(cornerRadius: 22)
                     .fill(
                         LinearGradient(
-                            colors: [Color.white.opacity(0.10), Color.white.opacity(0.03)],
+                            colors: [
+                                Color.white.opacity(0.10),
+                                Color.white.opacity(0.03)
+                            ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
                     )
+
                 RoundedRectangle(cornerRadius: 22)
                     .stroke(Color.black.opacity(0.2), lineWidth: 1)
             }
