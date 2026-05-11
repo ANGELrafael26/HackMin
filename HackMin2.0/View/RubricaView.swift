@@ -125,7 +125,10 @@ struct RubricaView: View {
                 }
             }
             .navigationBarHidden(true)
-            .sheet(isPresented: $mostrarCrearRubrica) {
+            .onAppear{
+                vm.cargarRubricas()
+            }
+            .sheet(isPresented: $mostrarCrearRubrica, onDismiss: vm.cargarRubricas) {
 
                 CrearRubricaView(
                     isPresented: $mostrarCrearRubrica
@@ -150,7 +153,7 @@ struct RubricaView: View {
 
 // MARK: - Card de rúbrica
 struct RubricaCardView: View {
-
+    @StateObject private var vm = RubricaViewModel()
     let rubrica: RubricaModel
     let geo: GeometryProxy
 
@@ -304,8 +307,8 @@ struct RubricaCardView: View {
 
             // Botón eliminar
             Button {
-
-            } label: {
+                vm.eliminarRubrica(id_rubrica: rubrica.id_rubrica)
+            }label: {
 
                 Image(systemName: "trash.fill")
                     .font(

@@ -40,6 +40,23 @@ class JuecesViewModel: ObservableObject {
         }
     }
 
+    func eliminarJuez(id_juez: String){
+        ConcursoJuezService.shared.removerJuez(id_juez: id_juez, id_concurso: CurrentCourseService.shared.currentCursoID)
+        { [weak self] result in
+            DispatchQueue.main.async {
+                self?.cargando = false
+                switch result {
+                case .success(let juecesObtenidos):
+                    withAnimation {
+                        print("reetiro excitoso")
+                    }
+                case .failure(let error):
+                    print("Error al cargar jueces: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+    
     func agregarJuez(_ juez: JuezModel) {
         jueces.append(juez)
     }

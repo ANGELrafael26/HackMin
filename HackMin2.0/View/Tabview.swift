@@ -112,7 +112,9 @@ struct Tabview: View {
         .alert("¿Cerrar evento?", isPresented: $vm.mostrarAlertaCerrar) {
             Button("Cancelar", role: .cancel) {}
             Button("Cerrar", role: .destructive) {
-                dismiss()
+                vm.terminarEvento {
+                    dismiss()
+                }
             }
         } message: {
             Text("Se cerrará el evento \"\(concurso.nombre_evento)\". ¿Deseas continuar?")

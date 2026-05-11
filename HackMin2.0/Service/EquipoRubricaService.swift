@@ -132,6 +132,7 @@ class EquipoRubricaService {
         }
     }
 
+
     func calificarEquipo(
         id_equipo:          String,
         puntajes_asignados: [String: Double], // ["id_criterio": puntaje]

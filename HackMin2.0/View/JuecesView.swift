@@ -93,6 +93,7 @@ struct JuezCardView: View {
 
     let juez: JuezModel
     let geo: GeometryProxy
+    @StateObject private var vm = JuecesViewModel()
     
     var body: some View {
 
@@ -178,7 +179,7 @@ struct JuezCardView: View {
 
             // Botón eliminar
             Button {
-
+                vm.eliminarJuez(id_juez: juez.id_juez)
             } label: {
 
                 Image(systemName: "trash.fill")

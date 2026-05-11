@@ -36,6 +36,18 @@ class EquiposViewModel: ObservableObject {
     }
 
     func eliminarEquipo(id: String) {
-        equipos.removeAll { $0.id_equipo == id }
+        equipoDAO.deleteEquipo(id_equipo: id){ [weak self] result in
+            DispatchQueue.main.async {
+                self?.cargando = false
+                switch result {
+                case .success(let equiposObtenidos):
+                    withAnimation {
+                        print("Eliminado")
+                    }
+                case .failure(let error):
+                    print("Error al cargar equipos: \(error.localizedDescription)")
+                }
+            }
+        }
     }
 }

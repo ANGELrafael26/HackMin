@@ -63,6 +63,9 @@ struct HistorialView: View {
             }
             .frame(width: geo.size.width, height: geo.size.height)
         }
+        .onAppear{
+            vm.obtenerCursos()
+        }
         .ignoresSafeArea()
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
