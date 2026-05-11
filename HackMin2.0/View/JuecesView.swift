@@ -67,6 +67,9 @@ struct JuecesView: View {
                 .padding(.trailing, geo.size.width * 0.03)
             }
         }
+        .onAppear {
+                    vm.cargarJueces()
+                }
         .sheet(isPresented: $mostrarCrearJuez) {
             CrearJuezView(
                 isPresented: $mostrarCrearJuez,
@@ -144,7 +147,7 @@ struct JuezCardView: View {
                 Text("Código")
                     .font(.system(size: geo.size.width * 0.010, design: .rounded))
                     .foregroundColor(.black.opacity(0.5))
-                Text(juez.codigo_juez)
+                Text(juez.id_juez)
                     .font(.system(
                         size: geo.size.width * 0.015,
                         weight: .semibold,

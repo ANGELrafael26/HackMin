@@ -116,7 +116,9 @@ struct RegistroAdministrador: View {
                             }
 
                             CustomButton(
-                                action: { vm.registrar() },
+                                action: {
+                                    vm.registrar()
+                                },
                                 style: .standard(
                                     fontColor: .white,
                                     backgroundColor: Color.orange,

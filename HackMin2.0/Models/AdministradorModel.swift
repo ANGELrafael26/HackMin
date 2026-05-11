@@ -8,11 +8,13 @@
 import Foundation
 
 struct AdministradorModel: Codable, Hashable {
+    var id: UUID
     var nombre: String
     var correo: String
     var contrasena: String
 
-    init(nombre: String, correo: String, contrasena: String) {
+    init(id: UUID,nombre: String, correo: String, contrasena: String) {
+        self.id = id
         self.nombre = nombre
         self.correo = correo
         self.contrasena = contrasena

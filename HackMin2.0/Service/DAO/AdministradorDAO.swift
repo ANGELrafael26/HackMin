@@ -19,7 +19,7 @@ class AdministradorDAO {
             return
         }
         
-        database.child(administradoresPath).child(admin.correo).setValue(dictionary) { error, _ in
+        database.child(administradoresPath).child(admin.id.uuidString).setValue(dictionary) { error, _ in
             if let error = error {
                 completion(.failure(error))
             } else {

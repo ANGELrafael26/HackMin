@@ -70,20 +70,27 @@ final class CrearEventoViewModel: ObservableObject {
 
         isLoading = true
 
-        dao.saveConcurso(concurso) { [weak self] result in
-            guard let self else { return }
-            self.isLoading = false
-
+        ConcursoJuezService.shared.crearConcurso(nombre: concurso.nombre_evento, fechaInicio: concurso.fecha_inicio, fechaFin: concurso.fecha_fin){ result in
             switch result {
-            case .success:
-                self.eventoCreado = true
-                self.mostrarError = false
-                self.resetForm()
-            case .failure(let error):
-                self.mensajeError = error.localizedDescription
-                self.mostrarError = true
+            case .success(let concurso): print("Creado: \(concurso.id_concurso)")
+            case .failure(let error):    print(error.localizedDescription)
             }
         }
+        
+//        dao.saveConcurso(concurso) { [weak self] result in
+//            guard let self else { return }
+//            self.isLoading = false
+//
+//            switch result {
+//            case .success:
+//                self.eventoCreado = true
+//                self.mostrarError = false
+//                self.resetForm()
+//            case .failure(let error):
+//                self.mensajeError = error.localizedDescription
+//                self.mostrarError = true
+//            }
+//        }
     }
 
     // MARK: - Reset

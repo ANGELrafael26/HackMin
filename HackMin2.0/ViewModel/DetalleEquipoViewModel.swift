@@ -41,12 +41,13 @@ class DetalleEquipoViewModel: ObservableObject {
     }
 
     private func cargarDatosPrueba() {
-        let jueces = [
-            JuezModel(id_juez: "j1", id_concurso: "c1", alias: "Dr. Alejandro Méndez", codigo_juez: "J001"),
-            JuezModel(id_juez: "j2", id_concurso: "c1", alias: "Ing. Sofía Ramírez",   codigo_juez: "J002"),
-            JuezModel(id_juez: "j3", id_concurso: "c1", alias: "Mtra. Carmen Vidal",   codigo_juez: "J003"),
-            JuezModel(id_juez: "j4", id_concurso: "c1", alias: "Dr. Roberto Lara",     codigo_juez: "J004")
-        ]
+        let jueces: [JuezModel] = []
+//        let jueces = [
+//            JuezModel(id_juez: "j1", id_concurso: "c1", alias: "Dr. Alejandro Méndez", codigo_juez: "J001"),
+//            JuezModel(id_juez: "j2", id_concurso: "c1", alias: "Ing. Sofía Ramírez",   codigo_juez: "J002"),
+//            JuezModel(id_juez: "j3", id_concurso: "c1", alias: "Mtra. Carmen Vidal",   codigo_juez: "J003"),
+//            JuezModel(id_juez: "j4", id_concurso: "c1", alias: "Dr. Roberto Lara",     codigo_juez: "J004")
+//        ]
 
         let califs = [
             CalificacionModel(

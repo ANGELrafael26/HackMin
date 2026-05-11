@@ -7,32 +7,46 @@
 
 import Foundation
 
-struct JuezModel: Codable, Hashable {
+struct JuezModel {
     var id_juez: String
-    var id_concurso: String
     var alias: String
-    var codigo_juez: String
-
-    init(id_juez: String, id_concurso: String, alias: String, codigo_juez: String) {
+    var correo: String
+    var contrasena: String
+    var id_concurso_asignado: String?
+ 
+    init(id_juez: String, nombre: String, correo: String, contrasena: String, id_concurso_asignado: String? = nil) {
         self.id_juez = id_juez
-        self.id_concurso = id_concurso
-        self.alias = alias
-        self.codigo_juez = codigo_juez
+        self.alias = nombre
+        self.correo = correo
+        self.contrasena = contrasena
+        self.id_concurso_asignado = id_concurso_asignado
     }
-    
-    func toDictionary() -> [String: Any]? {
-        guard let data = try? JSONEncoder().encode(self),
-              let dictionary = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] else {
-            return nil
-        }
-        return dictionary
-    }
-    
+ 
     init?(from dictionary: [String: Any]) {
-        guard let data = try? JSONSerialization.data(withJSONObject: dictionary, options: []),
-              let decodedModel = try? JSONDecoder().decode(JuezModel.self, from: data) else {
-            return nil
+        guard
+            let id = dictionary["id_juez"] as? String,
+            let nombre = dictionary["nombre"] as? String,
+            let correo = dictionary["correo"] as? String,
+            let contrasena = dictionary["contrasena"] as? String
+        else { return nil }
+ 
+        self.id_juez = id
+        self.alias = nombre
+        self.correo = correo
+        self.contrasena = contrasena
+        self.id_concurso_asignado = dictionary["id_concurso_asignado"] as? String
+    }
+ 
+    func toDictionary() -> [String: Any] {
+        var dict: [String: Any] = [
+            "id_juez": id_juez,
+            "nombre": alias,
+            "correo": correo,
+            "contrasena": contrasena
+        ]
+        if let idConcurso = id_concurso_asignado {
+            dict["id_concurso_asignado"] = idConcurso
         }
-        self = decodedModel
+        return dict
     }
 }

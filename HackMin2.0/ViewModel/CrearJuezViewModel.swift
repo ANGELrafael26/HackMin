@@ -27,27 +27,20 @@ class CrearJuezViewModel: ObservableObject {
             return
         }
         
-        codigoJuez = JuezDAO.generarCodigo()
         
         mostrarError = false
         
-        let nuevoJuez = JuezModel(
-            id_juez: UUID().uuidString,
-            id_concurso: idConcurso,
-            alias: alias.trimmingCharacters(in: .whitespaces),
-            codigo_juez: codigoJuez.trimmingCharacters(in: .whitespaces)
-        )
         
-        // Llamada al DAO para guardar
-        juezDAO.saveJuez(nuevoJuez) { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success():
-                    self?.mostrarError = false
-                case .failure(let error):
-                    self?.mensajeError = error.localizedDescription
-                    self?.mostrarError = true
-                }
+        ConcursoJuezService.shared.crearJuez(
+            nombre:     alias,
+            correo:     "placeholder@gmail.com",
+            contrasena: "1234"
+        ) { result in
+            if case .success(let juez) = result {
+                ConcursoJuezService.shared.asignarJueces(
+                    ids_jueces:  [juez.id_juez],
+                    id_concurso: CurrentCourseService.shared.currentCursoID
+                ) { _ in }
             }
         }
     }

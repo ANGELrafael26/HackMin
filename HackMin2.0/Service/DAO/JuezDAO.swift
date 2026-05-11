@@ -9,108 +9,83 @@ import Foundation
 import FirebaseDatabase
 
 class JuezDAO {
-    
+ 
     private let database = Database.database().reference()
     private let juecesPath = "jueces"
-    
-    // MARK: - Generar código
-    
-    static func generarCodigo() -> String {
-        let codigo = Int.random(in: 10000...99999)
-        return String(codigo)
-    }
-    
-    // MARK: - Save
-    
+ 
+    // Guarda o actualiza un juez
     func saveJuez(_ juez: JuezModel, completion: @escaping (Result<Void, Error>) -> Void) {
-        guard let dictionary = juez.toDictionary() else {
-            completion(.failure(JuezError.serializationFailed))
-            return
-        }
-        
-        database.child(juecesPath).child(juez.id_juez).setValue(dictionary) { error, _ in
-            if let error = error {
-                completion(.failure(error))
-            } else {
-                completion(.success(()))
-            }
+        database.child(juecesPath).child(juez.id_juez).setValue(juez.toDictionary()) { error, _ in
+            if let error = error { completion(.failure(error)) }
+            else { completion(.success(())) }
         }
     }
-    
+ 
+    // Obtiene un juez por ID
     func getJuez(id_juez: String, completion: @escaping (Result<JuezModel, Error>) -> Void) {
         database.child(juecesPath).child(id_juez).observeSingleEvent(of: .value) { snapshot in
-            guard let dictionary = snapshot.value as? [String: Any] else {
+            guard let dict = snapshot.value as? [String: Any],
+                  let juez = JuezModel(from: dict) else {
                 completion(.failure(JuezError.juezNotFound))
                 return
             }
-            
-            guard let juez = JuezModel(from: dictionary) else {
-                completion(.failure(JuezError.deserializationFailed))
-                return
-            }
-            
             completion(.success(juez))
         }
     }
-    
-    func getJueces(porConcurso id_concurso: String, completion: @escaping (Result<[JuezModel], Error>) -> Void) {
+ 
+    // Login de juez por correo
+    func getJuezByCorreo(_ correo: String, completion: @escaping (Result<JuezModel, Error>) -> Void) {
+        database.child(juecesPath)
+            .queryOrdered(byChild: "correo")
+            .queryEqual(toValue: correo)
+            .observeSingleEvent(of: .value) { snapshot in
+                guard let value = snapshot.value as? [String: [String: Any]],
+                      let firstEntry = value.values.first,
+                      let juez = JuezModel(from: firstEntry) else {
+                    completion(.failure(JuezError.juezNotFound))
+                    return
+                }
+                completion(.success(juez))
+            }
+    }
+ 
+    func getAllJueces(completion: @escaping (Result<[JuezModel], Error>) -> Void) {
         database.child(juecesPath).observeSingleEvent(of: .value) { snapshot in
             guard let value = snapshot.value as? [String: [String: Any]] else {
                 completion(.success([]))
                 return
             }
-            
             let jueces = value.compactMap { JuezModel(from: $0.value) }
-                              .filter { $0.id_concurso == id_concurso }
             completion(.success(jueces))
         }
     }
-    
-    // MARK: - Login Juez
-    
-    func loginJuez(codigo: String, completion: @escaping (Result<JuezModel, Error>) -> Void) {
-        database.child(juecesPath).observeSingleEvent(of: .value) { snapshot in
-            guard let value = snapshot.value as? [String: [String: Any]] else {
-                completion(.failure(JuezError.juezNotFound))
-                return
-            }
-            
-            let jueces = value.compactMap { JuezModel(from: $0.value) }
-            
-            guard let juez = jueces.first(where: { $0.codigo_juez == codigo }) else {
-                completion(.failure(JuezError.codigoInvalido))
-                return
-            }
-            
-            completion(.success(juez))
-        }
-    }
-    
+ 
     func deleteJuez(id_juez: String, completion: @escaping (Result<Void, Error>) -> Void) {
         database.child(juecesPath).child(id_juez).removeValue { error, _ in
-            if let error = error {
-                completion(.failure(error))
-            } else {
-                completion(.success(()))
-            }
+            if let error = error { completion(.failure(error)) }
+            else { completion(.success(())) }
+        }
+    }
+ 
+    func asignarConcurso(id_juez: String, id_concurso: String?, completion: @escaping (Result<Void, Error>) -> Void) {
+        let value: Any = id_concurso ?? NSNull()
+        database.child(juecesPath).child(id_juez).child("id_concurso_asignado").setValue(value) { error, _ in
+            if let error = error { completion(.failure(error)) }
+            else { completion(.success(())) }
         }
     }
 }
-
-// MARK: - Errors
-
+ 
 enum JuezError: LocalizedError {
-    case serializationFailed
-    case deserializationFailed
     case juezNotFound
-    case codigoInvalido
-    
+    case wrongPassword
+    case notAssignedToConcurso
+ 
     var errorDescription: String? {
         switch self {
-        case .serializationFailed:   return "No se pudo serializar el juez."
-        case .deserializationFailed: return "No se pudo deserializar el juez."
-        case .juezNotFound:          return "Juez no encontrado."
-        case .codigoInvalido:        return "Código inválido."
+        case .juezNotFound:           return "Juez no encontrado."
+        case .wrongPassword:          return "Contraseña incorrecta."
+        case .notAssignedToConcurso:  return "El juez no está asignado a ningún concurso."
         }
     }
 }

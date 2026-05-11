@@ -10,15 +10,37 @@ import SwiftUI
 import Combine
 
 class JuecesViewModel: ObservableObject {
-    @Published var jueces: [JuezModel] = [
-        JuezModel(id_juez: "j1", id_concurso: "c1", alias: "Dr. Alejandro Méndez",  codigo_juez: "J001"),
-        JuezModel(id_juez: "j2", id_concurso: "c1", alias: "Ing. Sofía Ramírez",    codigo_juez: "J002"),
-        JuezModel(id_juez: "j3", id_concurso: "c1", alias: "Mtra. Carmen Vidal",    codigo_juez: "J003"),
-        JuezModel(id_juez: "j4", id_concurso: "c1", alias: "Dr. Roberto Lara",      codigo_juez: "J004")
-    ]
-
+    @Published var jueces: [JuezModel] = []
     @Published var mostrarCrearJuez: Bool = false
+    @Published var cargando: Bool = true // Nueva variable para controlar el estado de carga
+    
     var idConcurso: String = ""
+
+    // Función para obtener los jueces desde Firebase
+    func cargarJueces() {
+        // Asegurarnos de que el ID no esté vacío antes de buscar
+        guard !idConcurso.isEmpty else {
+            print("Error: idConcurso está vacío.")
+            self.cargando = false
+            return
+        }
+        
+        self.cargando = true
+        
+        ConcursoJuezService.shared.getJueces(deConcurso: idConcurso) { [weak self] result in
+            DispatchQueue.main.async {
+                self?.cargando = false
+                switch result {
+                case .success(let juecesObtenidos):
+                    withAnimation {
+                        self?.jueces = juecesObtenidos
+                    }
+                case .failure(let error):
+                    print("Error al cargar jueces: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
 
     func agregarJuez(_ juez: JuezModel) {
         jueces.append(juez)

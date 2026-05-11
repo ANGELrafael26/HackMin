@@ -14,6 +14,13 @@ class CurrentUserManager {
     private init() {}
     
     private(set) var currentAdmin: AdministradorModel? = nil
+    
+    func setCurrentAdmin(_ admin: AdministradorModel?) {
+        self.currentAdmin = admin
+    }
+    
+    var isAdmin: Bool = false
+    
     private(set) var currentJuez: JuezModel? = nil
     
     func loginAdmin(correo: String, contrasena: String,
@@ -44,6 +51,17 @@ class CurrentUserManager {
     
     var currentAdminName: String {
         return currentAdmin?.nombre ?? ""
+    }
+    
+    var isAdminLoggedIn: Bool {
+        return currentAdmin != nil
+    }
+
+    func isAdministrator(){
+        if currentAdmin != nil{
+            self.isAdmin = true
+        }
+        self.isAdmin = false
     }
     
     var isLoggedIn: Bool {

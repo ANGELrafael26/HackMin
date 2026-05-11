@@ -34,19 +34,19 @@ final class LogInJuezViewModel: ObservableObject {
         isLoading = true
         mostrarError = false
 
-        dao.loginJuez(codigo: codigo.trimmingCharacters(in: .whitespaces)) { [weak self] result in
-            guard let self else { return }
-            self.isLoading = false
-
-            switch result {
-            case .success(let juez):
-                self.juezAutenticado = juez
-                CurrentUserManager.shared.setCurrentJuez(juez: juez)
-            case .failure(let error):
-                self.mensajeError = error.localizedDescription
-                self.mostrarError = true
-            }
-        }
+//        dao.loginJuez(codigo: codigo.trimmingCharacters(in: .whitespaces)) { [weak self] result in
+//            guard let self else { return }
+//            self.isLoading = false
+//
+//            switch result {
+//            case .success(let juez):
+//                self.juezAutenticado = juez
+//                CurrentUserManager.shared.setCurrentJuez(juez: juez)
+//            case .failure(let error):
+//                self.mensajeError = error.localizedDescription
+//                self.mostrarError = true
+//            }
+//        }
     }
 
     // MARK: - Reset
