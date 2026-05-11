@@ -19,7 +19,7 @@ class AdministradorDAO {
             return
         }
         
-        database.child(administradoresPath).child(admin.id.uuidString).setValue(dictionary) { error, _ in
+        database.child(administradoresPath).child(admin.user).setValue(dictionary) { error, _ in
             if let error = error {
                 completion(.failure(error))
             } else {
@@ -28,8 +28,8 @@ class AdministradorDAO {
         }
     }
     
-    func getAdministrador(correo: String, completion: @escaping (Result<AdministradorModel, Error>) -> Void) {
-        database.child(administradoresPath).child(correo).observeSingleEvent(of: .value) { snapshot in
+    func getAdministrador(user: String, completion: @escaping (Result<AdministradorModel, Error>) -> Void) {
+        database.child(administradoresPath).child(user).observeSingleEvent(of: .value) { snapshot in
             guard let dictionary = snapshot.value as? [String: Any] else {
                 completion(.failure(AdministradorError.adminNotFound))
                 return

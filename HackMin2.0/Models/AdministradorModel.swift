@@ -12,12 +12,14 @@ struct AdministradorModel: Codable, Hashable {
     var nombre: String
     var correo: String
     var contrasena: String
+    var user: String
 
-    init(id: UUID,nombre: String, correo: String, contrasena: String) {
+    init(id: UUID,nombre: String, correo: String, contrasena: String, user: String) {
         self.id = id
         self.nombre = nombre
         self.correo = correo
         self.contrasena = contrasena
+        self.user = user
     }
     
     func toDictionary() -> [String: Any]? {

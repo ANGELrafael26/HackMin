@@ -28,14 +28,13 @@ class RegistroAdministradorViewModel: ObservableObject {
         
         let dao = AdministradorDAO()
         
-        let newAdministrador = AdministradorModel(id: UUID(), nombre: "\(nombres) \(apellidos)", correo: "Place holder", contrasena: contrasena)
+        let newAdministrador = AdministradorModel(id: UUID(), nombre: "\(nombres) \(apellidos)", correo: "Place holder", contrasena: contrasena, user: usuario)
         
         dao.saveAdministrador(newAdministrador) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success():
                     CurrentUserManager.shared.setCurrentAdmin(newAdministrador)
-                    CurrentUserManager.shared.isAdministrator()
                     print("Administrador guardado exitosamente en Firebase.")
                     self?.navegarPrincipal = true
                     

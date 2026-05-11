@@ -14,18 +14,18 @@ class CurrentUserManager {
     private init() {}
     
     private(set) var currentAdmin: AdministradorModel? = nil
+    var isAdmin: Bool = false
     
     func setCurrentAdmin(_ admin: AdministradorModel?) {
         self.currentAdmin = admin
+        isAdmin = true
     }
-    
-    var isAdmin: Bool = false
     
     private(set) var currentJuez: JuezModel? = nil
     
-    func loginAdmin(correo: String, contrasena: String,
+    func loginAdmin(user: String, contrasena: String,
                     completion: @escaping (Result<AdministradorModel, Error>) -> Void) {
-        AdministradorDAO().getAdministrador(correo: correo) { result in
+        AdministradorDAO().getAdministrador(user: user) { result in
             switch result {
             case .success(let admin):
                 guard admin.contrasena == contrasena else {
@@ -55,13 +55,6 @@ class CurrentUserManager {
     
     var isAdminLoggedIn: Bool {
         return currentAdmin != nil
-    }
-
-    func isAdministrator(){
-        if currentAdmin != nil{
-            self.isAdmin = true
-        }
-        self.isAdmin = false
     }
     
     var isLoggedIn: Bool {
