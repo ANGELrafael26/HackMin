@@ -217,7 +217,7 @@ struct JuezCalificacionCard: View {
                                     )
                                 )
                                 .frame(
-                                    width: geo.size.width * 0.18 * (puntaje.valor / 10.0),
+                                    width: geo.size.width * 0.18 * (puntaje.maximo > 0 ? (puntaje.valor / puntaje.maximo) : 0),
                                     height: geo.size.height * 0.018
                                 )
                         }

@@ -15,6 +15,7 @@ class EquipoRubricaService {
     private let equipoDAO       = EquipoDAO()
     private let rubricaDAO      = RubricaDAO()
     private let calificacionDAO = CalificacionDAO()
+    private let juezDAO = JuezDAO()
 
     func crearEquipo(
         nombre:          String,
@@ -130,7 +131,6 @@ class EquipoRubricaService {
             }
         }
     }
-
 
     func calificarEquipo(
         id_equipo:          String,
@@ -249,6 +249,94 @@ class EquipoRubricaService {
             .sorted { $0.puntaje > $1.puntaje }
 
             completion(.success(resultado))
+        }
+    }
+    
+    func getCalificacionesDeEquipo(
+        id_equipo: String,
+        completion: @escaping (Result<[JuezCalificacionItem], Error>) -> Void
+    ) {
+        guard let idConcurso = CurrentCourseService.shared.currentConcurso?.id_concurso else {
+            completion(.failure(ConectorError.noConcursoActivo))
+            return
+        }
+
+        let group = DispatchGroup()
+        var calificaciones: [CalificacionModel] = []
+        var rubrica: RubricaModel? = nil
+        var firstError: Error? = nil
+
+        group.enter()
+        calificacionDAO.getCalificaciones(porConcurso: idConcurso) { res in
+            switch res {
+            case .success(let cals):
+                calificaciones = cals.filter { $0.id_equipo == id_equipo }
+            case .failure(let e):
+                firstError = e
+            }
+            group.leave()
+        }
+
+        group.enter()
+        rubricaDAO.getRubricas(porConcurso: idConcurso) { res in
+            switch res {
+            case .success(let r): rubrica = r.first
+            case .failure(let e): firstError = e
+            }
+            group.leave()
+        }
+
+        group.notify(queue: .main) {
+            if let error = firstError {
+                completion(.failure(error))
+                return
+            }
+
+            guard let rubrica else {
+                completion(.failure(RubricaError.rubricaNotFound))
+                return
+            }
+
+            // Mapa id_criterio → CriterioModel para lookup rápido
+            let criterioMap = Dictionary(
+                uniqueKeysWithValues: rubrica.criterios.map { ($0.id_criterio, $0) }
+            )
+
+            let group2 = DispatchGroup()
+            var items: [JuezCalificacionItem] = []
+            var fetchError: Error? = nil
+
+            for cal in calificaciones {
+                group2.enter()
+                self.juezDAO.getJuez(id_juez: cal.id_juez) { res in
+                    switch res {
+                    case .failure(let e):
+                        fetchError = e
+                    case .success(let juez):
+                        // Construir puntajes usando nombre del criterio y fórmula correcta
+                        let puntajes: [PuntajeCriterio] = cal.puntajes_asignados.compactMap { id, valor in
+                            guard let criterio = criterioMap[id] else { return nil }
+                            return PuntajeCriterio(
+                                criterio: criterio.nombre_criterio,
+                                valor:    valor,
+                                peso:     criterio.peso_porcentual,
+                                maximo:   criterio.puntaje_maximo
+                            )
+                        }.sorted { $0.criterio < $1.criterio }
+
+                        items.append(JuezCalificacionItem(juez: juez, calificacion: cal, puntajes: puntajes))
+                    }
+                    group2.leave()
+                }
+            }
+
+            group2.notify(queue: .main) {
+                if let error = fetchError {
+                    completion(.failure(error))
+                } else {
+                    completion(.success(items.sorted { $0.juez.nombre < $1.juez.nombre }))
+                }
+            }
         }
     }
 }
