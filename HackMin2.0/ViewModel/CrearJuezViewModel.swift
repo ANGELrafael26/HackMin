@@ -40,7 +40,9 @@ class CrearJuezViewModel: ObservableObject {
                 ConcursoJuezService.shared.asignarJueces(
                     ids_jueces:  [juez.id_juez],
                     id_concurso: CurrentCourseService.shared.currentCursoID
-                ) { _ in }
+                )
+                { _ in }
+                self.codigoJuez = juez.id_juez
             }
         }
     }
