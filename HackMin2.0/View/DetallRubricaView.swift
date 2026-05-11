@@ -97,14 +97,51 @@ struct DetallRubricaView: View {
                             .padding(.vertical, geo.size.height * 0.018)
                             .background(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .fill(Color.orange)
-                                    .shadow(color: .orange.opacity(0.4), radius: 6, x: 0, y: 3)
+                                    .fill(rubrica.pesoTotal >= 100 ? Color.gray.opacity(0.5) : Color.orange)
+                                    .shadow(color: .orange.opacity(rubrica.pesoTotal >= 100 ? 0 : 0.4), radius: 6, x: 0, y: 3)
                             )
                         }
+                        .disabled(rubrica.pesoTotal >= 100)
                     }
                     .padding(.horizontal, geo.size.width * 0.04)
                     .padding(.top, geo.size.height * 0.085)
-                    .padding(.bottom, geo.size.height * 0.025)
+                    .padding(.bottom, geo.size.height * 0.012)
+
+                    // Barra de progreso
+                    VStack(spacing: geo.size.height * 0.008) {
+                        GeometryReader { barGeo in
+                            ZStack(alignment: .leading) {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(Color.white.opacity(0.15))
+                                    .frame(height: 8)
+
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(
+                                        rubrica.pesoTotal == 100
+                                            ? LinearGradient(colors: [.green, .green.opacity(0.7)], startPoint: .leading, endPoint: .trailing)
+                                            : LinearGradient(colors: [.orange, .orange.opacity(0.6)], startPoint: .leading, endPoint: .trailing)
+                                    )
+                                    .frame(width: barGeo.size.width * CGFloat(min(rubrica.pesoTotal, 100)) / 100, height: 8)
+                                    .animation(.spring(response: 0.5, dampingFraction: 0.75), value: rubrica.pesoTotal)
+                            }
+                        }
+                        .frame(height: 8)
+
+                        HStack {
+                            if rubrica.pesoTotal == 100 {
+                                Text("✓ Rúbrica completa al 100%")
+                                    .font(.system(size: geo.size.width * 0.011, weight: .semibold, design: .rounded))
+                                    .foregroundColor(.green.opacity(0.85))
+                            } else {
+                                Text("Faltan \(100 - Int(rubrica.pesoTotal))% para completar la rúbrica")
+                                    .font(.system(size: geo.size.width * 0.011, design: .rounded))
+                                    .foregroundColor(.white.opacity(0.55))
+                            }
+                            Spacer()
+                        }
+                    }
+                    .padding(.horizontal, geo.size.width * 0.04)
+                    .padding(.bottom, geo.size.height * 0.018)
 
                     // Lista criterios
                     ScrollView(.vertical, showsIndicators: false) {
@@ -138,7 +175,8 @@ struct DetallRubricaView: View {
             CrearCriterioView(
                 isPresented: $mostrarCrearCriterio,
                 idConcurso: rubrica.id_concurso,
-                idRubrica: rubrica.id_rubrica
+                idRubrica: rubrica.id_rubrica,
+                pesoUsado: rubrica.criterios.reduce(0) { $0 + $1.peso_porcentual }
             ) { nuevoCriterio in
                 withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
                     rubrica.criterios.append(nuevoCriterio)

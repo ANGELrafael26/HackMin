@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 import Combine
 
+// CrearCriterioViewModel.swift
 class CrearCriterioViewModel: ObservableObject {
     @Published var nombreCriterio: String = ""
     @Published var descripcion: String = ""
@@ -17,7 +18,7 @@ class CrearCriterioViewModel: ObservableObject {
     @Published var mostrarError: Bool = false
     @Published var mensajeError: String = ""
 
-    func crearCriterio(idConcurso: String, idRubrica: String) -> CriterioModel? {
+    func crearCriterio(idConcurso: String, idRubrica: String, pesoUsado: Double) -> CriterioModel? {
         guard !nombreCriterio.trimmingCharacters(in: .whitespaces).isEmpty else {
             mensajeError = "El nombre del criterio es obligatorio."
             mostrarError = true
@@ -33,6 +34,17 @@ class CrearCriterioViewModel: ObservableObject {
             mostrarError = true
             return nil
         }
+        
+        // ← validación clave: el nuevo peso no puede exceder el disponible
+        let pesoDisponible = 100.0 - pesoUsado
+        guard peso <= pesoDisponible else {
+            mensajeError = pesoDisponible <= 0
+                ? "Ya se usó el 100% del peso disponible."
+                : "Solo quedan \(Int(pesoDisponible))% disponibles (total no puede superar 100%)."
+            mostrarError = true
+            return nil
+        }
+        
         guard let puntaje = Double(puntajeMaximo), puntaje > 0 else {
             mensajeError = "El puntaje máximo debe ser mayor a 0."
             mostrarError = true

@@ -12,7 +12,10 @@ struct CrearCriterioView: View {
     @Binding var isPresented: Bool
     var idConcurso: String = ""
     var idRubrica: String = ""
+    var pesoUsado: Double = 0     
     var onGuardar: (CriterioModel) -> Void
+
+    var pesoDisponible: Int { max(0, 100 - Int(pesoUsado)) }
 
     var body: some View {
         GeometryReader { geo in
@@ -37,6 +40,16 @@ struct CrearCriterioView: View {
                         Text("Nuevo criterio")
                             .font(.system(size: geo.size.width * 0.014, weight: .semibold, design: .rounded))
                             .foregroundColor(.gray)
+
+    
+                        VStack(spacing: 6) {
+                            Text("Peso disponible")
+                                .font(.system(size: geo.size.width * 0.011, design: .rounded))
+                                .foregroundColor(.gray.opacity(0.7))
+                            Text("\(pesoDisponible)%")
+                                .font(.system(size: geo.size.width * 0.022, weight: .bold, design: .rounded))
+                                .foregroundColor(pesoDisponible > 0 ? .orange : .red)
+                        }
                     }
                     .frame(width: geo.size.width * 0.65 * 0.35)
 
@@ -68,7 +81,7 @@ struct CrearCriterioView: View {
                             width: geo.size.width * 0.65 * 0.52
                         )
                         CustomTextField(
-                            placeholder: "Peso porcentual (ej: 25)",
+                            placeholder: "Peso porcentual (máx. \(pesoDisponible)%)",
                             text: $vm.pesoPorcentual,
                             type: .normal,
                             backgroundColor: .white.opacity(0.75),
@@ -98,14 +111,18 @@ struct CrearCriterioView: View {
 
                         CustomButton(
                             action: {
-                                if let criterio = vm.crearCriterio(idConcurso: idConcurso, idRubrica: idRubrica) {
+                                if let criterio = vm.crearCriterio(
+                                    idConcurso: idConcurso,
+                                    idRubrica: idRubrica,
+                                    pesoUsado: pesoUsado
+                                ) {
                                     onGuardar(criterio)
                                     isPresented = false
                                 }
                             },
                             style: .standard(
                                 fontColor: .white,
-                                backgroundColor: .orange,
+                                backgroundColor: pesoDisponible > 0 ? .orange : .gray,
                                 buttonName: "Agregar criterio",
                                 fontName: "Helvetica Neue",
                                 fontSize: geo.size.width * 0.018,
